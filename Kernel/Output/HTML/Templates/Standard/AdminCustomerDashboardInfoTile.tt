@@ -77,8 +77,9 @@
                         <tr>
                             <th>[% Translate("Start date") | html %]</th>
                             <th>[% Translate("Stop date") | html %]</th>
-                            <th>[% Translate("Comment") | html %]</th>
-                            <th>[% Translate("Validity") | html %]</th>
+                            <th>[% Translate("Permission") | html %]</th>
+                            <th>[% Translate("Heading") | html %]</th>
+                            <th>[% Translate("Content") | html %]</th>
                             <th class="Center">[% Translate("Delete") | html %]</th>
                         </tr>
                     </thead>
@@ -86,18 +87,20 @@
 [% RenderBlockStart("ViewRow") %]
                         <tr [% IF Data.ValidID != "valid"%]class="Invalid"[% END %]>
                             <td>
-                                <a class="AsBlock" href="[% Env("Baselink") %]Action=AdminSystemMaintenance;Subaction=SystemMaintenanceEdit;SystemMaintenanceID=[% Data.ID | uri %]">[% Data.StartDateTimeStamp | html %]</a>
+                                <a class="AsBlock" href="[% Env("Baselink") %]Action=AdminCustomerDashboardInfoTile;Subaction=CustomerDashboardInfoTileEdit;InfoTileID=[% Data.ID | uri %]">[% Data.StartDateTimeStamp | html %]</a>
                             </td>
                             <td>
-                                <a class="AsBlock" href="[% Env("Baselink") %]Action=AdminSystemMaintenance;Subaction=SystemMaintenanceEdit;SystemMaintenanceID=[% Data.ID | uri %]">[% Data.StopDateTimeStamp | html %]</a>
+                                <a class="AsBlock" href="[% Env("Baselink") %]Action=AdminCustomerDashboardInfoTile;Subaction=CustomerDashboardInfoTileEdit;InfoTileID=[% Data.ID | uri %]">[% Data.StopDateTimeStamp | html %]</a>
                             </td>
-                            <td>[% Data.Comment | truncate(80) | html %]</td>
+                            <td>[% Data.Permission | html %]</td>
+                            <td>[% Data.Heading | truncate(80) | html %]</td>
+                            <td>[% Data.Content | truncate(80) | html %]</td>
                             <td>[% Translate(Data.ValidID) | html %]</td>
 
                             <td class="Center">
-                                <a class="TrashCan SystemMaintenanceDelete" href="[% Env("Baselink") %]Action=[% Env("Action") %];Subaction=Delete;SystemMaintenanceID=[% Data.ID | uri %];[% Env("ChallengeTokenParam") | html %]" title="[% Translate("Delete System Maintenance") | html %]">
+                                <a class="TrashCan CustomerDashboardInfoInfoTileDelete" href="[% Env("Baselink") %]Action=[% Env("Action") %];Subaction=Delete;InfoTileID=[% Data.ID | uri %];[% Env("ChallengeTokenParam") | html %]" title="[% Translate("Delete Info Tile Entry") | html %]">
                                     <i class="fa fa-trash-o"></i>
-                                    <span class="InvisibeText">[% Translate("Delete System Maintenance") | html %]</span>
+                                    <span class="InvisibeText">[% Translate("Delete Info Tile Entry") | html %]</span>
                                 </a>
                             </td>
                         </tr>
