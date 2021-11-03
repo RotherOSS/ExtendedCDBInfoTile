@@ -76,8 +76,6 @@ add a new infotile entry
 sub InfoTileAdd {
     my ( $Self, %Param ) = @_;
 
-    print STDERR "Add\n";
-
     if ( !$Param{Permission} ) {
         $Param{Permission} = (0, 1, 2);
     }
@@ -91,6 +89,9 @@ sub InfoTileAdd {
             return;
         }
     }
+
+    use Data::Dumper;
+    print STDERR "Add Params: " . Dumper(\%Param) . "\n";
 
     # get needed objects
     my $XMLObject       = $Kernel::OM->Get('Kernel::System::XML');
@@ -117,10 +118,10 @@ sub InfoTileAdd {
             { Content => $Param{Content} },
         ],
         StartDate => [
-            { Content => $Param{StartDate} },
+            { Content => "$Param{StartDateYear}-$Param{StartDateMonth}-$Param{StartDateDay} $Param{StartDateHour}:$Param{StartDateMinute}" },
         ],
         StopDate => [
-            { Content => $Param{StopDate} },
+            { Content => "$Param{StopDateYear}-$Param{StopDateMonth}-$Param{StopDateDay} $Param{StopDateHour}:$Param{StopDateMinute}" },
         ],
         Permission => [
             { Content => $Param{Permission} },
@@ -137,8 +138,8 @@ sub InfoTileAdd {
         ChangedBy => [
             { Content => $Param{UserID} },
         ],
-        Valid => [
-            { Content => 1 },
+        ValidID => [
+            { Content => $Param{ValidID} },
         ],
     );
 
@@ -188,36 +189,23 @@ sub InfoTileGet {
         );
     }
 
-    print STDERR "Bla\n";
-
     my $CacheObject = $Kernel::OM->Get('Kernel::System::Cache');
-
-    print STDERR "Blabla\n";
 
     my $CacheKey = "InfoTileGet::InfoTileID::$Param{InfoTileID}";
     
-    print STDERR "Blablabla\n";
-
     my $Cache = $CacheObject->Get(
         Type => 'InfoTiles',
         Key  => $CacheKey,
         CacheInMemory => 0,
     );
 
-    print STDERR "Blablablabla\n";
-
     return $Cache if ref $Cache eq 'HASH';
     
-    print STDERR "Blablablablabla\n";
-
     # get hash from storage
     my @XMLHash = $Kernel::OM->Get('Kernel::System::XML')->XMLHashGet(
         Type => 'InfoTiles',
         Key => $Param{InfoTileID},
     );
-
-    use Data::Dumper;
-    print STDERR "XMLHash: " . Dumper(@XMLHash) . "\n";
 
     if ( !$XMLHash[0] ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
@@ -233,7 +221,7 @@ sub InfoTileGet {
     # process all strings
     $InfoTile{InfoTileID} = $Param{InfoTileID};
     for my $Key (
-        qw(Heading Content StartDate StopDate Created CreatedBy Changed ChangedBy Valid
+        qw(Heading Content StartDate StopDate Created CreatedBy Changed ChangedBy ValidID
         )
         )
     {
@@ -323,9 +311,6 @@ sub InfoTileListGet {
 
     }
     
-    use Data::Dumper;
-    print STDERR "SearchResult: " . Dumper(@SearchResult) . "\n";
-    
     # get user groups
     my %GroupList = $Kernel::OM->Get('Kernel::System::Group')->PermissionUserGet(
         UserID => $Param{UserID},
@@ -359,8 +344,6 @@ sub InfoTileListGet {
             }
         }
 
-        print STDERR "InfoTile: " . Dumper($InfoTile) . "\n";
-
         # check if current date is within info tile range
         my $DateValid = 0;
         my $CurrentDateObj = $Kernel::OM->Create('Kernel::System::DateTime');
@@ -373,7 +356,7 @@ sub InfoTileListGet {
         my $EndDateObj = $Kernel::OM->Create(
             'Kernel::System::DateTime',
             ObjectParams => {
-                String => $InfoTile->{EndDate}
+                String => $InfoTile->{StopDate}
             }
         );
         if ( $StartDateObj->Compare( DateTimeObject => $CurrentDateObj ) && $CurrentDateObj->Compare(DateTimeObject => $EndDateObj  ) ) {

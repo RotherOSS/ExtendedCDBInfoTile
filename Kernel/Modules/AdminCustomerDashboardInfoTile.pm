@@ -41,15 +41,11 @@ sub Run {
     my $ParamObject             = $Kernel::OM->Get('Kernel::System::Web::Request');
     my $SessionObject           = $Kernel::OM->Get('Kernel::System::AuthSession');
     my $CustomerDashboardInfoTileObject = $Kernel::OM->Get('Kernel::System::CustomerDashboard::InfoTile');
-    use Data::Dumper;
-    print STDERR "Module: " . Dumper($CustomerDashboardInfoTileObject) . "\n";
 
     my $CustomerDashboardInfoTileID = $ParamObject->GetParam( Param => 'CustomerDashboardInfoTileID' ) || '';
     my $WantSessionID       = $ParamObject->GetParam( Param => 'WantSessionID' )       || '';
 
     my $SessionVisibility = 'Collapsed';
-
-    print STDERR "Subaction: $Self->{Subaction}\n";
 
     # ------------------------------------------------------------ #
     # kill session id
@@ -116,8 +112,6 @@ sub Run {
             Error => \%Error,
         );
 
-        print STDERR "Subaction NewAction: " . Dumper($CustomerDashboardInfoTileData);
-
         # a StartDate should always be defined before StopDate
         if (
             (
@@ -158,8 +152,6 @@ sub Run {
             $Error{ValidIDServerError} = 'ServerError';
         }
 
-        print STDERR "Error: " . Dumper(\%Error);
-
         # if there is an error return to edit screen
         if ( IsHashRefWithData( \%Error ) ) {
 
@@ -173,11 +165,20 @@ sub Run {
         }
 
         print STDERR "Correct Function\n";
-        print STDERR !$CustomerDashboardInfoTileObject;
 
         my $CustomerDashboardInfoTileID = $CustomerDashboardInfoTileObject->InfoTileAdd(
             StartDate        => $CustomerDashboardInfoTileData->{StartDate},
+            StartDateYear   => $CustomerDashboardInfoTileData->{StartDateYear},
+            StartDateMonth  => $CustomerDashboardInfoTileData->{StartDateMonth},
+            StartDateDay    => $CustomerDashboardInfoTileData->{StartDateDay},
+            StartDateHour   => $CustomerDashboardInfoTileData->{StartDateHour},
+            StartDateMinute => $CustomerDashboardInfoTileData->{StartDateMinute},
             StopDate         => $CustomerDashboardInfoTileData->{StopDate},
+            StopDateYear    => $CustomerDashboardInfoTileData->{StopDateYear},
+            StopDateMonth   => $CustomerDashboardInfoTileData->{StopDateMonth},
+            StopDateDay     => $CustomerDashboardInfoTileData->{StopDateDay},
+            StopDateHour    => $CustomerDashboardInfoTileData->{StopDateHour},
+            StopDateMinute  => $CustomerDashboardInfoTileData->{StopDateMinute},
             Heading          => $CustomerDashboardInfoTileData->{Heading},
             Content          => $CustomerDashboardInfoTileData->{Content},
             Permission       => $CustomerDashboardInfoTileData->{Permission},
@@ -383,10 +384,8 @@ sub Run {
             ID               => $CustomerDashboardInfoTileID,
             StartDate        => $CustomerDashboardInfoTileData->{StartDate},
             StopDate         => $CustomerDashboardInfoTileData->{StopDate},
-            Comment          => $CustomerDashboardInfoTileData->{Comment},
-            LoginMessage     => $CustomerDashboardInfoTileData->{LoginMessage},
-            ShowLoginMessage => $CustomerDashboardInfoTileData->{ShowLoginMessage},
-            NotifyMessage    => $CustomerDashboardInfoTileData->{NotifyMessage},
+            Heading          => $CustomerDashboardInfoTileData->{Heading},
+            Content          => $CustomerDashboardInfoTileData->{Content},
             ValidID          => $CustomerDashboardInfoTileData->{ValidID},
             UserID           => $Self->{UserID},
         );
@@ -464,7 +463,13 @@ sub Run {
         }
         else {
 
-            for my $CustomerDashboardInfoTile ( @{$CustomerDashboardInfoTileList} ) {
+            for my $InfoTileID ( keys %{$CustomerDashboardInfoTileList} ) {
+
+                my $CustomerDashboardInfoTile = %{$CustomerDashboardInfoTileList}{$InfoTileID};
+                
+                use Data::Dumper;
+                print STDERR "AdminCustomerDashboardInfoTile.pm, L.476: " . Dumper($CustomerDashboardInfoTile) . "\n";
+                                
 
                 # set the valid state
                 $CustomerDashboardInfoTile->{ValidID} = $Kernel::OM->Get('Kernel::System::Valid')->ValidLookup( ValidID => $CustomerDashboardInfoTile->{ValidID} );
@@ -475,7 +480,7 @@ sub Run {
                     my $DateTimeObject = $Kernel::OM->Create(
                         'Kernel::System::DateTime',
                         ObjectParams => {
-                            Epoch => $CustomerDashboardInfoTile->{$Key},
+                            String => $CustomerDashboardInfoTile->{$Key},
                         },
                     );
                     $DateTimeObject->ToTimeZone( TimeZone => $Self->{UserTimeZone} );
@@ -690,9 +695,9 @@ sub _GetParams {
     # get parameters from web browser
     for my $ParamName (
         qw(
-        StartDateYear StartDateMonth StartDateDay StartDateHour StartDateMinute
+        StartDateYear StartDateMonth StartDateDay StartDateHour StartDateMinute 
         StopDateYear StopDateMonth StopDateDay StopDateHour StopDateMinute StartDate StopDate
-        Comment LoginMessage ShowLoginMessage NotifyMessage ValidID Heading Content Permission )
+        Heading Content ValidID Permission )
         )
     {
         $GetParam->{$ParamName} = $ParamObject->GetParam( Param => $ParamName );
