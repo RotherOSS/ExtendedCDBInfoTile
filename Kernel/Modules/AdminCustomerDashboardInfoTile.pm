@@ -41,11 +41,15 @@ sub Run {
     my $ParamObject             = $Kernel::OM->Get('Kernel::System::Web::Request');
     my $SessionObject           = $Kernel::OM->Get('Kernel::System::AuthSession');
     my $CustomerDashboardInfoTileObject = $Kernel::OM->Get('Kernel::System::CustomerDashboard::InfoTile');
+    use Data::Dumper;
+    print STDERR "Module: " . Dumper($CustomerDashboardInfoTileObject) . "\n";
 
     my $CustomerDashboardInfoTileID = $ParamObject->GetParam( Param => 'CustomerDashboardInfoTileID' ) || '';
     my $WantSessionID       = $ParamObject->GetParam( Param => 'WantSessionID' )       || '';
 
     my $SessionVisibility = 'Collapsed';
+
+    print STDERR "Subaction: $Self->{Subaction}\n";
 
     # ------------------------------------------------------------ #
     # kill session id
@@ -58,7 +62,7 @@ sub Run {
         $SessionObject->RemoveSessionID( SessionID => $WantSessionID );
         return $LayoutObject->Redirect(
             OP =>
-                "Action=AdminCustomerDashboardInfoTile;Subaction=CustomerDashboardInfoTileEdit;CustomerDashboardInfoTileID=$CustomerDashboardInfoTileID;Kill=1"
+                "Action=AdminCustomerDashboardInfoTile;Subaction=CustomerDashboardInfoTileEdit;InfoTileID=$CustomerDashboardInfoTileID;Kill=1"
         );
     }
 
@@ -79,7 +83,7 @@ sub Run {
 
         return $LayoutObject->Redirect(
             OP =>
-                "Action=AdminCustomerDashboardInfoTile;Subaction=CustomerDashboardInfoTileEdit;CustomerDashboardInfoTileID=$CustomerDashboardInfoTileID;KillAll=1"
+                "Action=AdminCustomerDashboardInfoTile;Subaction=CustomerDashboardInfoTileEdit;InfoTileID=$CustomerDashboardInfoTileID;KillAll=1"
         );
     }
 
@@ -99,6 +103,7 @@ sub Run {
     # ------------------------------------------------------------ #
     elsif ( $Self->{Subaction} eq 'CustomerDashboardInfoTileNewAction' ) {
 
+
         # challenge token check for write action
         $LayoutObject->ChallengeTokenCheck();
 
@@ -110,6 +115,8 @@ sub Run {
         my $CustomerDashboardInfoTileData = $Self->_GetParams(
             Error => \%Error,
         );
+
+        print STDERR "Subaction NewAction: " . Dumper($CustomerDashboardInfoTileData);
 
         # a StartDate should always be defined before StopDate
         if (
@@ -131,22 +138,18 @@ sub Run {
             };
         }
 
-        if ( !$CustomerDashboardInfoTileData->{Comment} ) {
+        if ( !$CustomerDashboardInfoTileData->{Heading} ) {
 
             # add server error class
-            $Error{CommentServerError} = 'ServerError';
+            $Error{HeadingServerError} = 'ServerError';
 
         }
 
-        # Trigger server error if 'Login message' or 'Notify message' is longer then 250 characters.
-        #   See bug#13366 (https://bugs.otrs.org/show_bug.cgi?id=13366)
-        if ( $CustomerDashboardInfoTileData->{LoginMessage} && length $CustomerDashboardInfoTileData->{LoginMessage} > 250 ) {
+        if ( !$CustomerDashboardInfoTileData->{Content} ) {
 
-            $Error{LoginMessageServerError} = 'ServerError';
-        }
-        if ( $CustomerDashboardInfoTileData->{NotifyMessage} && length $CustomerDashboardInfoTileData->{NotifyMessage} > 250 ) {
-
-            $Error{NotifyMessageServerError} = 'ServerError';
+            # add server error class
+            $Error{ContentServerError} = 'ServerError';
+        
         }
 
         if ( !$CustomerDashboardInfoTileData->{ValidID} ) {
@@ -154,6 +157,8 @@ sub Run {
             # add server error class
             $Error{ValidIDServerError} = 'ServerError';
         }
+
+        print STDERR "Error: " . Dumper(\%Error);
 
         # if there is an error return to edit screen
         if ( IsHashRefWithData( \%Error ) ) {
@@ -167,13 +172,15 @@ sub Run {
             );
         }
 
-        my $CustomerDashboardInfoTileID = $CustomerDashboardInfoTileObject->CustomerDashboardInfoTileAdd(
+        print STDERR "Correct Function\n";
+        print STDERR !$CustomerDashboardInfoTileObject;
+
+        my $CustomerDashboardInfoTileID = $CustomerDashboardInfoTileObject->InfoTileAdd(
             StartDate        => $CustomerDashboardInfoTileData->{StartDate},
             StopDate         => $CustomerDashboardInfoTileData->{StopDate},
-            Comment          => $CustomerDashboardInfoTileData->{Comment},
-            LoginMessage     => $CustomerDashboardInfoTileData->{LoginMessage},
-            ShowLoginMessage => $CustomerDashboardInfoTileData->{ShowLoginMessage},
-            NotifyMessage    => $CustomerDashboardInfoTileData->{NotifyMessage},
+            Heading          => $CustomerDashboardInfoTileData->{Heading},
+            Content          => $CustomerDashboardInfoTileData->{Content},
+            Permission       => $CustomerDashboardInfoTileData->{Permission},
             ValidID          => $CustomerDashboardInfoTileData->{ValidID},
             UserID           => $Self->{UserID},
         );
@@ -193,7 +200,7 @@ sub Run {
         {
             return $LayoutObject->Redirect(
                 OP =>
-                    "Action=$Self->{Action};Subaction=CustomerDashboardInfoTileEdit;CustomerDashboardInfoTileID=$CustomerDashboardInfoTileID;Notification=Add"
+                    "Action=$Self->{Action};Subaction=CustomerDashboardInfoTileEdit;InfoTileID=$CustomerDashboardInfoTileID;Notification=Add"
             );
         }
         else {
@@ -217,7 +224,7 @@ sub Run {
         }
 
         # get customerdashboard info data
-        my $CustomerDashboardInfoTileData = $CustomerDashboardInfoTileObject->CustomerDashboardInfoTileGet(
+        my $CustomerDashboardInfoTileData = $CustomerDashboardInfoTileObject->InfoTileGet(
             ID     => $CustomerDashboardInfoTileID,
             UserID => $Self->{UserID},
         );
@@ -372,7 +379,7 @@ sub Run {
         }
 
         # otherwise update configuration and return to edit screen
-        my $UpdateResult = $CustomerDashboardInfoTileObject->CustomerDashboardInfoTileUpdate(
+        my $UpdateResult = $CustomerDashboardInfoTileObject->InfoTileUpdate(
             ID               => $CustomerDashboardInfoTileID,
             StartDate        => $CustomerDashboardInfoTileData->{StartDate},
             StopDate         => $CustomerDashboardInfoTileData->{StopDate},
@@ -399,7 +406,7 @@ sub Run {
         {
             return $LayoutObject->Redirect(
                 OP =>
-                    "Action=$Self->{Action};Subaction=CustomerDashboardInfoTileEdit;CustomerDashboardInfoTileID=$CustomerDashboardInfoTileID;Notification=Update"
+                    "Action=$Self->{Action};Subaction=CustomerDashboardInfoTileEdit;InfoTileID=$CustomerDashboardInfoTileID;Notification=Update"
             );
         }
         else {
@@ -423,7 +430,7 @@ sub Run {
             );
         }
 
-        my $Delete = $CustomerDashboardInfoTileObject->CustomerDashboardInfoTileDelete(
+        my $Delete = $CustomerDashboardInfoTileObject->InfoTileDelete(
             ID     => $CustomerDashboardInfoTileID,
             UserID => $Self->{UserID},
         );
@@ -678,15 +685,17 @@ sub _GetParams {
 
     my $GetParam;
 
+    my $ParamObject = $Kernel::OM->Get('Kernel::System::Web::Request');
+
     # get parameters from web browser
     for my $ParamName (
         qw(
         StartDateYear StartDateMonth StartDateDay StartDateHour StartDateMinute
-        StopDateYear StopDateMonth StopDateDay StopDateHour StopDateMinute
-        Comment LoginMessage ShowLoginMessage NotifyMessage ValidID )
+        StopDateYear StopDateMonth StopDateDay StopDateHour StopDateMinute StartDate StopDate
+        Comment LoginMessage ShowLoginMessage NotifyMessage ValidID Heading Content Permission )
         )
     {
-        $GetParam->{$ParamName} = $Kernel::OM->Get('Kernel::System::Web::Request')->GetParam( Param => $ParamName );
+        $GetParam->{$ParamName} = $ParamObject->GetParam( Param => $ParamName );
     }
     $Param{ShowLoginMessage} ||= 0;
 

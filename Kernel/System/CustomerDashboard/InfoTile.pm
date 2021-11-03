@@ -64,9 +64,9 @@ add a new infotile entry
 
     my $InfoTileID = $InfoTileObject->InfoTileAdd(
         UserID      => $UserID,
-        GroupIDs    => \@GroupIDs,
-        FromDate    => $FromDate,
-        ToDate      => $ToDate,
+        Permission  => \@Permission,
+        StartDate   => $StartDate,
+        StopDate    => $StopDate,
         Heading     => $Heading,
         Content     => $Content,
     );
@@ -76,10 +76,16 @@ add a new infotile entry
 sub InfoTileAdd {
     my ( $Self, %Param ) = @_;
 
-    for my $Needed (qw(UserID GroupIDs FromDate ToDate Heading Content)) {
+    print STDERR "Add\n";
+
+    if ( !$Param{Permission} ) {
+        $Param{Permission} = (0, 1, 2);
+    }
+
+    for my $Needed (qw(UserID Permission StartDate StopDate Heading Content)) {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority    => "error",
+                Priority    => 'error',
                 Message     => "Need $Needed.",
             );
             return;
@@ -104,6 +110,21 @@ sub InfoTileAdd {
     my $TimeStamp = $DateTimeObject->ToString();
 
     my %MetaData = (
+        Heading => [
+            { Content => $Param{Heading} },
+        ],
+        Content => [
+            { Content => $Param{Content} },
+        ],
+        StartDate => [
+            { Content => $Param{StartDate} },
+        ],
+        StopDate => [
+            { Content => $Param{StopDate} },
+        ],
+        Permission => [
+            { Content => $Param{Permission} },
+        ],
         Created => [
             { Content => $TimeStamp },
         ],
@@ -138,7 +159,7 @@ sub InfoTileAdd {
         return;
     }
 
-    Kernel::OM->Get('Kernel::System::Cache')->CleanUp(
+    $Kernel::OM->Get('Kernel::System::Cache')->CleanUp(
         Type => 'InfoTiles'
     );
 
@@ -167,28 +188,41 @@ sub InfoTileGet {
         );
     }
 
+    print STDERR "Bla\n";
+
     my $CacheObject = $Kernel::OM->Get('Kernel::System::Cache');
+
+    print STDERR "Blabla\n";
 
     my $CacheKey = "InfoTileGet::InfoTileID::$Param{InfoTileID}";
     
+    print STDERR "Blablabla\n";
+
     my $Cache = $CacheObject->Get(
-        Type => 'InfoTile',
+        Type => 'InfoTiles',
         Key  => $CacheKey,
         CacheInMemory => 0,
     );
 
+    print STDERR "Blablablabla\n";
+
     return $Cache if ref $Cache eq 'HASH';
+    
+    print STDERR "Blablablablabla\n";
 
     # get hash from storage
     my @XMLHash = $Kernel::OM->Get('Kernel::System::XML')->XMLHashGet(
-        Type => 'InfoTile',
+        Type => 'InfoTiles',
         Key => $Param{InfoTileID},
     );
+
+    use Data::Dumper;
+    print STDERR "XMLHash: " . Dumper(@XMLHash) . "\n";
 
     if ( !$XMLHash[0] ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
-            Message => "Can't get InfoTileID $Param{InfoTileId}!",
+            Message => "Can't get InfoTileID $Param{InfoTileID}!",
         );
         return;
     }
@@ -199,7 +233,7 @@ sub InfoTileGet {
     # process all strings
     $InfoTile{InfoTileID} = $Param{InfoTileID};
     for my $Key (
-        qw(Heading Content StartDate EndDate Created CreatedBy Changed ChangedBy Valid
+        qw(Heading Content StartDate StopDate Created CreatedBy Changed ChangedBy Valid
         )
         )
     {
@@ -269,7 +303,7 @@ sub InfoTileListGet {
     my $CacheKey = "InfoTileListGet::XMLSearch";
     
     my $Cache = $CacheObject->Get(
-        Type => 'InfoTile',
+        Type => 'InfoTiles',
         Key  => $CacheKey,
         CacheInMemory => 0,
     );
@@ -284,11 +318,14 @@ sub InfoTileListGet {
         my $XMLObject = $Kernel::OM->Get('Kernel::System::XML');
 
         # No cache. Is there info tile data yet?
-        @SearchResult = $XMLObject->XMLHashSearch( Type => 'InfoTile' );
+        @SearchResult = $XMLObject->XMLHashSearch( Type => 'InfoTiles' );
         
 
     }
-
+    
+    use Data::Dumper;
+    print STDERR "SearchResult: " . Dumper(@SearchResult) . "\n";
+    
     # get user groups
     my %GroupList = $Kernel::OM->Get('Kernel::System::Group')->PermissionUserGet(
         UserID => $Param{UserID},
@@ -321,6 +358,8 @@ sub InfoTileListGet {
                 last GROUPID;
             }
         }
+
+        print STDERR "InfoTile: " . Dumper($InfoTile) . "\n";
 
         # check if current date is within info tile range
         my $DateValid = 0;
@@ -358,6 +397,9 @@ update an existing infotile entry
 
 sub InfoTileUpdate {
     my ( $Self, %Param ) = @_;
+
+    use Data::Dumper;
+    print STDERR "Update: " . Dumper(%Param);
 
     for my $Needed (qw(UserID InfoTileID)) {
         if ( !$Param{$Needed} ) {

@@ -54,7 +54,7 @@
             <div class="Content">
                 <form action="[% Env("CGIHandle") %]" method="post" class="Validate PreventMultipleSubmits">
                     <input type="hidden" name="Action" value="[% Env("Action") %]"/>
-                    <input type="hidden" name="Subaction" value="CustomerDashboardInfoTIleNewAction"/>
+                    <input type="hidden" name="Subaction" value="CustomerDashboardInfoTileNewAction"/>
                     <input type="hidden" name="ContinueAfterSave" id="ContinueAfterSave" value=""/>
                     <fieldset class="TableLike">
 
