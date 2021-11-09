@@ -35,7 +35,6 @@ sub new {
 }
 
 sub Run {
-    
     my ( $Self, %Param ) = @_;
 
     my $LayoutObject            = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
@@ -44,10 +43,6 @@ sub Run {
     my $CustomerDashboardInfoTileObject = $Kernel::OM->Get('Kernel::System::CustomerDashboard::InfoTile');
 
     my $InfoTileID = $ParamObject->GetParam( Param => 'InfoTileID' ) || '';
-    
-    print STDERR "AdminCustomerDashboardInfoTile.pm, L.48: " . $InfoTileID . "\n";
-        
-
     my $WantSessionID       = $ParamObject->GetParam( Param => 'WantSessionID' )       || '';
 
     my $SessionVisibility = 'Collapsed';
@@ -103,7 +98,6 @@ sub Run {
     # CustomerDashboardInfoTileNewAction
     # ------------------------------------------------------------ #
     elsif ( $Self->{Subaction} eq 'CustomerDashboardInfoTileNewAction' ) {
-
 
         # challenge token check for write action
         $LayoutObject->ChallengeTokenCheck();
@@ -171,17 +165,7 @@ sub Run {
 
         my $InfoTileID = $CustomerDashboardInfoTileObject->InfoTileAdd(
             StartDate        => $CustomerDashboardInfoTileData->{StartDate},
-            StartDateYear   => $CustomerDashboardInfoTileData->{StartDateYear},
-            StartDateMonth  => $CustomerDashboardInfoTileData->{StartDateMonth},
-            StartDateDay    => $CustomerDashboardInfoTileData->{StartDateDay},
-            StartDateHour   => $CustomerDashboardInfoTileData->{StartDateHour},
-            StartDateMinute => $CustomerDashboardInfoTileData->{StartDateMinute},
             StopDate         => $CustomerDashboardInfoTileData->{StopDate},
-            StopDateYear    => $CustomerDashboardInfoTileData->{StopDateYear},
-            StopDateMonth   => $CustomerDashboardInfoTileData->{StopDateMonth},
-            StopDateDay     => $CustomerDashboardInfoTileData->{StopDateDay},
-            StopDateHour    => $CustomerDashboardInfoTileData->{StopDateHour},
-            StopDateMinute  => $CustomerDashboardInfoTileData->{StopDateMinute},
             Heading          => $CustomerDashboardInfoTileData->{Heading},
             Content          => $CustomerDashboardInfoTileData->{Content},
             Permission       => $CustomerDashboardInfoTileData->{Permission},
@@ -240,7 +224,7 @@ sub Run {
             my $DateTimeObject = $Kernel::OM->Create(
                 'Kernel::System::DateTime',
                 ObjectParams => {
-                    String => $CustomerDashboardInfoTileData->{$Key},
+                    Epoch => $CustomerDashboardInfoTileData->{$Key},
                 }
             );
             $CustomerDashboardInfoTileData->{ $Key . 'TimeStamp' } =
@@ -311,7 +295,7 @@ sub Run {
     }
 
     # ------------------------------------------------------------ #
-    # System Maintenance edit action
+    # Customer Dashboard Info Tile edit action
     # ------------------------------------------------------------ #
     elsif ( $Self->{Subaction} eq 'CustomerDashboardInfoTileEditAction' ) {
 
@@ -326,10 +310,6 @@ sub Run {
         my $CustomerDashboardInfoTileData = $Self->_GetParams(
             Error => \%Error,
         );
-
-        use Data::Dumper;
-        print STDERR "AdminCustomerDashboardInfoTile.pm, L.331: " . Dumper($CustomerDashboardInfoTileData);
-
 
         # a StartDate should always be defined before StopDate
         if (
@@ -347,6 +327,20 @@ sub Run {
                 Priority => 'Error',
                 Info     => Translatable('Start date shouldn\'t be defined after Stop date!'),
             };
+        }
+
+        if ( !$CustomerDashboardInfoTileData->{Content} ) {
+            
+            # add server error class
+            $Error{ContentServerError} = 'ServerError';
+
+        }
+
+        if ( !$CustomerDashboardInfoTileData->{Heading} ) {
+
+            # add server error class
+            $Error{HeadingServerError} = 'ServerError';
+
         }
 
         if ( !$CustomerDashboardInfoTileData->{ValidID} ) {
@@ -368,23 +362,10 @@ sub Run {
             );
         }
 
-        print STDERR "AdminCustomerDashboardInfoTile.pm, L.383: Test 2";
-
-
         # otherwise update configuration and return to edit screen
         my $UpdateResult = $CustomerDashboardInfoTileObject->InfoTileUpdate(
             StartDate        => $CustomerDashboardInfoTileData->{StartDate},
-            StartDateYear   => $CustomerDashboardInfoTileData->{StartDateYear},
-            StartDateMonth  => $CustomerDashboardInfoTileData->{StartDateMonth},
-            StartDateDay    => $CustomerDashboardInfoTileData->{StartDateDay},
-            StartDateHour   => $CustomerDashboardInfoTileData->{StartDateHour},
-            StartDateMinute => $CustomerDashboardInfoTileData->{StartDateMinute},
             StopDate         => $CustomerDashboardInfoTileData->{StopDate},
-            StopDateYear    => $CustomerDashboardInfoTileData->{StopDateYear},
-            StopDateMonth   => $CustomerDashboardInfoTileData->{StopDateMonth},
-            StopDateDay     => $CustomerDashboardInfoTileData->{StopDateDay},
-            StopDateHour    => $CustomerDashboardInfoTileData->{StopDateHour},
-            StopDateMinute  => $CustomerDashboardInfoTileData->{StopDateMinute},
             Heading          => $CustomerDashboardInfoTileData->{Heading},
             Content          => $CustomerDashboardInfoTileData->{Content},
             Permission       => $CustomerDashboardInfoTileData->{Permission},
@@ -396,7 +377,7 @@ sub Run {
         # show error if can't create
         if ( !$UpdateResult ) {
             return $LayoutObject->ErrorScreen(
-                Message => Translatable('There was an error updating the System Maintenance'),
+                Message => Translatable('There was an error updating the Customer Dashboard Info Tile'),
             );
         }
 
@@ -418,7 +399,7 @@ sub Run {
     }
 
     # ------------------------------------------------------------ #
-    # System Maintenance Delete
+    # Customer Dashboard Info Tile Delete
     # ------------------------------------------------------------ #
     elsif ( $Self->{Subaction} eq 'Delete' ) {
 
@@ -427,13 +408,13 @@ sub Run {
 
         if ( !$InfoTileID ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Message  => "No System Maintenance ID $InfoTileID",
+                Message  => "No Customer Dashboard Info Tile ID $InfoTileID",
                 Priority => 'error',
             );
         }
 
         my $Delete = $CustomerDashboardInfoTileObject->InfoTileDelete(
-            ID     => $InfoTileID,
+            InfoTileID     => $InfoTileID,
             UserID => $Self->{UserID},
         );
         if ( !$Delete ) {
@@ -449,7 +430,7 @@ sub Run {
     }
 
     # ------------------------------------------------------------ #
-    # else, show system maintenance list
+    # else, show customer dashboard info tile list
     # ------------------------------------------------------------ #
     else {
 
@@ -466,14 +447,10 @@ sub Run {
         }
         else {
 
-            for my $InfoTileID ( keys %{$CustomerDashboardInfoTileList} ) {
+            for my $LocalInfoTileID ( keys %{$CustomerDashboardInfoTileList} ) {
 
-                my $CustomerDashboardInfoTile = %{$CustomerDashboardInfoTileList}{$InfoTileID};
+                my $CustomerDashboardInfoTile = %{$CustomerDashboardInfoTileList}{$LocalInfoTileID};
                 
-                use Data::Dumper;
-                print STDERR "AdminCustomerDashboardInfoTile.pm, L.476: " . Dumper($CustomerDashboardInfoTile) . "\n";
-                                
-
                 # set the valid state
                 $CustomerDashboardInfoTile->{ValidID} = $Kernel::OM->Get('Kernel::System::Valid')->ValidLookup( ValidID => $CustomerDashboardInfoTile->{ValidID} );
 
@@ -507,12 +484,12 @@ sub Run {
 
         if ( ( $ParamObject->GetParam( Param => 'Notification' ) || '' ) eq 'Update' ) {
             $Output .= $LayoutObject->Notify(
-                Info => Translatable('System Maintenance was updated successfully!')
+                Info => Translatable('Customer Dashboard Info Tile was updated successfully!')
             );
         }
         elsif ( ( $ParamObject->GetParam( Param => 'Notification' ) || '' ) eq 'Add' ) {
             $Output .= $LayoutObject->Notify(
-                Info => Translatable('System Maintenance was added successfully!')
+                Info => Translatable('Customer Dashboard Info Tile was added successfully!')
             );
         }
 
@@ -539,8 +516,8 @@ sub _ShowEdit {
 
         # time setting if available
         if (
-            $CustomerDashboardInfoTileData->{ $Prefix . 'TimeStamp' }
-            && $CustomerDashboardInfoTileData->{ $Prefix . 'TimeStamp' }
+            $CustomerDashboardInfoTileData->{ $Prefix }
+            && $CustomerDashboardInfoTileData->{ $Prefix }
             =~ m{^(\d\d\d\d)-(\d\d)-(\d\d)\s(\d\d):(\d\d):(\d\d)$}xi
             )
         {
@@ -699,16 +676,12 @@ sub _GetParams {
     for my $ParamName (
         qw(
         InfoTileID StartDateYear StartDateMonth StartDateDay StartDateHour StartDateMinute 
-        StopDateYear StopDateMonth StopDateDay StopDateHour StopDateMinute StartDate StopDate
+        StopDateYear StopDateMonth StopDateDay StopDateHour StopDateMinute
         Heading Content ValidID Permission )
         )
     {
         $GetParam->{$ParamName} = $ParamObject->GetParam( Param => $ParamName );
-        print STDERR "AdminCustomerDashboardInfoTile.pm, L.707: " . $ParamName . "\n";
-        
     }
-    use Data::Dumper;
-    print STDERR "AdminCustomerDashboardInfoTile.pm, L.711: " . Dumper($GetParam);
 
     $Param{ShowLoginMessage} ||= 0;
 

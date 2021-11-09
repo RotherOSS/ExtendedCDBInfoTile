@@ -80,7 +80,7 @@ sub InfoTileAdd {
         $Param{Permission} = (0, 1, 2);
     }
 
-    for my $Needed (qw(UserID Permission StartDate StartDateYear StartDateMonth StartDateDay StartDateHour StartDateMinute StopDate StopDateYear StopDateMonth StopDateDay StopDateHour StopDateMinute Heading Content)) {
+    for my $Needed (qw(UserID Permission StartDate StopDate Heading Content)) {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority    => 'error',
@@ -89,9 +89,6 @@ sub InfoTileAdd {
             return;
         }
     }
-
-    use Data::Dumper;
-    print STDERR "Add Params: " . Dumper(\%Param) . "\n";
 
     # get needed objects
     my $XMLObject       = $Kernel::OM->Get('Kernel::System::XML');
@@ -107,27 +104,23 @@ sub InfoTileAdd {
         $InfoTileID = $SortKeys[-1] + 1;
     }
 
+    use Data::Dumper;
+    print STDERR "InfoTile.pm, L.108: " . Dumper(%Param);
+    
+
     # requesting current time stamp
     my $TimeStamp = $DateTimeObject->ToString();
 
     my $StartDate = $Kernel::OM->Create('Kernel::System::DateTime',
         ObjectParams => {
-            Year => $Param{StartDateYear},
-            Month => $Param{StartDateMonth},
-            Day => $Param{StartDateDay},
-            Hour => $Param{StartDateHour},
-            Minute => $Param{StartDateMinute},
+            Epoch => $Param{StartDate},
         });
 
     my $StartDateString = $StartDate->ToString();
 
     my $StopDate = $Kernel::OM->Create('Kernel::System::DateTime', 
         ObjectParams => {                                              
-            Year => $Param{StopDateYear},
-            Month => $Param{StopDateMonth},
-            Day => $Param{StopDateDay},
-            Hour => $Param{StopDateHour},
-            Minute => $Param{StopDateMinute},
+            Epoch => $Param{StopDate},
         }); 
 
     my $StopDateString = $StopDate->ToString();
@@ -378,13 +371,13 @@ sub InfoTileListGet {
                 String => $InfoTile->{StartDate}
             }
         );
-        my $EndDateObj = $Kernel::OM->Create(
+        my $StopDateObj = $Kernel::OM->Create(
             'Kernel::System::DateTime',
             ObjectParams => {
                 String => $InfoTile->{StopDate}
             }
         );
-        if ( $StartDateObj->Compare( DateTimeObject => $CurrentDateObj ) && $CurrentDateObj->Compare(DateTimeObject => $EndDateObj  ) ) {
+        if ( $StartDateObj->Compare( DateTimeObject => $CurrentDateObj ) && $CurrentDateObj->Compare(DateTimeObject => $StopDateObj  ) ) {
             $DateValid = 1;
         }
 
@@ -406,11 +399,11 @@ update an existing infotile entry
 sub InfoTileUpdate {
     my ( $Self, %Param ) = @_;
 
-    use Data::Dumper;
-    print STDERR "InfoTile.pm, L.407: " . Dumper(\%Param);
-    
+    if ( !$Param{Permission} ) {
+        $Param{Permission} = (0, 1, 2);
+    }
 
-    for my $Needed (qw(UserID InfoTileID Permission StartDate StartDateYear StartDateMonth StartDateDay StartDateHour StartDateMinute StopDate StopDateYear StopDateMonth StopDateDay StopDateHour StopDateMinute Heading Content)) {
+    for my $Needed (qw(UserID InfoTileID Permission StartDate StopDate Heading Content)) {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
@@ -438,38 +431,19 @@ sub InfoTileUpdate {
     my $XMLObject       = $Kernel::OM->Get('Kernel::System::XML');
     my $DateTimeObject  = $Kernel::OM->Create('Kernel::System::DateTime');
 
-    # get new InfoTileID
-    my $InfoTileID = 1;
-    my @Keys = $XMLObject->XMLHashSearch(
-            Type => 'InfoTiles',
-    );
-    
-    if(@Keys) {
-        my @SortKeys = sort { $a <=> $b } @Keys;
-        $InfoTileID = $SortKeys[-1] + 1;
-    }
-
     # requesting current time stamp
     my $TimeStamp = $DateTimeObject->ToString();
 
     my $StartDate = $Kernel::OM->Create('Kernel::System::DateTime',
             ObjectParams => {
-                Year => $Param{StartDateYear},
-                Month => $Param{StartDateMonth},
-                Day => $Param{StartDateDay},
-                Hour => $Param{StartDateHour},
-                Minute => $Param{StartDateMinute},
+                Epoch => $Param{StartDate},
             });
 
     my $StartDateString = $StartDate->ToString();
 
     my $StopDate = $Kernel::OM->Create('Kernel::System::DateTime',
             ObjectParams => {
-                Year => $Param{StopDateYear},
-                Month => $Param{StopDateMonth},
-                Day => $Param{StopDateDay},
-                Hour => $Param{StopDateHour},
-                Minute => $Param{StopDateMinute},
+                Epoch => $Param{StopDate},
             });
 
     my $StopDateString = $StopDate->ToString();
@@ -490,12 +464,6 @@ sub InfoTileUpdate {
             Permission => [
                 { Content => $Param{Permission} },
             ],
-            Created => [
-                { Content => $TimeStamp },
-            ],
-            CreatedBy => [
-                { Content => $Param{UserID} },
-            ],
             Changed => [
                 { Content => $TimeStamp },
             ],
@@ -514,7 +482,7 @@ sub InfoTileUpdate {
     
     my $Success = $XMLObject->XMLHashUpdate(
             Type        => 'InfoTiles',
-            Key         => $InfoTileID,
+            Key         => $Param{InfoTileID},
             XMLHash     => \@XMLHash,
     );
     
@@ -530,7 +498,7 @@ sub InfoTileUpdate {
         Type => 'InfoTiles'
     );
 
-    return $InfoTileID;
+    return $Param{InfoTileID};
 
 }
 
@@ -540,6 +508,40 @@ remove an infotile entry
 
 =cut
 
-sub InfoTileRemove {
+sub InfoTileDelete {
+    my ( $Self, %Param ) = @_;
+
+    use Data::Dumper;
+    print STDERR "InfoTile.pm, L.515: " . Dumper(\%Param) . "\n";
+    
+
+    # check needed stuff
+    for my $Key (qw(InfoTileID UserID)) {
+        if ( !$Param{$Key} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message => "Need $Key",
+            );
+            return;
+        }
+    }
+
+    # get needed objects
+    my $XMLObject       = $Kernel::OM->Get('Kernel::System::XML');
+
+    my $Success = $XMLObject->XMLHashDelete(
+        Type => 'InfoTiles',
+        Key => $Param{InfoTileID},
+    );
+
+    if ( !$Success ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message => 'Can not delete info tile entry!',
+        );
+        return;
+    }
+
+    return 1;
 
 }
