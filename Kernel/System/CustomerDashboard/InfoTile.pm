@@ -80,7 +80,7 @@ sub InfoTileAdd {
         $Param{Permission} = (0, 1, 2);
     }
 
-    for my $Needed (qw(UserID Permission StartDate StopDate Heading Content)) {
+    for my $Needed (qw(UserID Permission StartDate StartDateYear StartDateMonth StartDateDay StartDateHour StartDateMinute StopDate StopDateYear StopDateMonth StopDateDay StopDateHour StopDateMinute Heading Content)) {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority    => 'error',
@@ -110,7 +110,32 @@ sub InfoTileAdd {
     # requesting current time stamp
     my $TimeStamp = $DateTimeObject->ToString();
 
+    my $StartDate = $Kernel::OM->Create('Kernel::System::DateTime',
+        ObjectParams => {
+            Year => $Param{StartDateYear},
+            Month => $Param{StartDateMonth},
+            Day => $Param{StartDateDay},
+            Hour => $Param{StartDateHour},
+            Minute => $Param{StartDateMinute},
+        });
+
+    my $StartDateString = $StartDate->ToString();
+
+    my $StopDate = $Kernel::OM->Create('Kernel::System::DateTime', 
+        ObjectParams => {                                              
+            Year => $Param{StopDateYear},
+            Month => $Param{StopDateMonth},
+            Day => $Param{StopDateDay},
+            Hour => $Param{StopDateHour},
+            Minute => $Param{StopDateMinute},
+        }); 
+
+    my $StopDateString = $StopDate->ToString();
+
     my %MetaData = (
+        InfoTileID => [
+            { Content => $InfoTileID },  
+        ],
         Heading => [
             { Content => $Param{Heading} },
         ],
@@ -118,10 +143,10 @@ sub InfoTileAdd {
             { Content => $Param{Content} },
         ],
         StartDate => [
-            { Content => "$Param{StartDateYear}-$Param{StartDateMonth}-$Param{StartDateDay} $Param{StartDateHour}:$Param{StartDateMinute}" },
+            { Content => $StartDateString },
         ],
         StopDate => [
-            { Content => "$Param{StopDateYear}-$Param{StopDateMonth}-$Param{StopDateDay} $Param{StopDateHour}:$Param{StopDateMinute}" },
+            { Content => $StopDateString },
         ],
         Permission => [
             { Content => $Param{Permission} },
@@ -221,7 +246,7 @@ sub InfoTileGet {
     # process all strings
     $InfoTile{InfoTileID} = $Param{InfoTileID};
     for my $Key (
-        qw(Heading Content StartDate StopDate Created CreatedBy Changed ChangedBy ValidID
+        qw(InfoTileID Heading Content StartDate StopDate Created CreatedBy Changed ChangedBy ValidID
         )
         )
     {
@@ -382,9 +407,10 @@ sub InfoTileUpdate {
     my ( $Self, %Param ) = @_;
 
     use Data::Dumper;
-    print STDERR "Update: " . Dumper(%Param);
+    print STDERR "InfoTile.pm, L.407: " . Dumper(\%Param);
+    
 
-    for my $Needed (qw(UserID InfoTileID)) {
+    for my $Needed (qw(UserID InfoTileID Permission StartDate StartDateYear StartDateMonth StartDateDay StartDateHour StartDateMinute StopDate StopDateYear StopDateMonth StopDateDay StopDateHour StopDateMinute Heading Content)) {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
@@ -393,6 +419,9 @@ sub InfoTileUpdate {
             return;
         }
     }
+
+    # date start shouldn't be higher than stop date
+    return if ( $Param{StartDate} > $Param{StopDate} );
 
     # declaration of the hash
     my %InfoTileXML;
@@ -404,6 +433,104 @@ sub InfoTileUpdate {
             Message => 'Need InfoTileID!'
         );
     }
+
+    # get needed objects                                                                                       
+    my $XMLObject       = $Kernel::OM->Get('Kernel::System::XML');
+    my $DateTimeObject  = $Kernel::OM->Create('Kernel::System::DateTime');
+
+    # get new InfoTileID
+    my $InfoTileID = 1;
+    my @Keys = $XMLObject->XMLHashSearch(
+            Type => 'InfoTiles',
+    );
+    
+    if(@Keys) {
+        my @SortKeys = sort { $a <=> $b } @Keys;
+        $InfoTileID = $SortKeys[-1] + 1;
+    }
+
+    # requesting current time stamp
+    my $TimeStamp = $DateTimeObject->ToString();
+
+    my $StartDate = $Kernel::OM->Create('Kernel::System::DateTime',
+            ObjectParams => {
+                Year => $Param{StartDateYear},
+                Month => $Param{StartDateMonth},
+                Day => $Param{StartDateDay},
+                Hour => $Param{StartDateHour},
+                Minute => $Param{StartDateMinute},
+            });
+
+    my $StartDateString = $StartDate->ToString();
+
+    my $StopDate = $Kernel::OM->Create('Kernel::System::DateTime',
+            ObjectParams => {
+                Year => $Param{StopDateYear},
+                Month => $Param{StopDateMonth},
+                Day => $Param{StopDateDay},
+                Hour => $Param{StopDateHour},
+                Minute => $Param{StopDateMinute},
+            });
+
+    my $StopDateString = $StopDate->ToString();
+
+    my %MetaData = (
+            Heading => [
+                { Content => $Param{Heading} },
+            ],
+            Content => [
+                { Content => $Param{Content} },
+            ],
+            StartDate => [
+                { Content => $StartDateString },
+            ],
+            StopDate => [
+                { Content => $StopDateString },
+            ],
+            Permission => [
+                { Content => $Param{Permission} },
+            ],
+            Created => [
+                { Content => $TimeStamp },
+            ],
+            CreatedBy => [
+                { Content => $Param{UserID} },
+            ],
+            Changed => [
+                { Content => $TimeStamp },
+            ],
+            ChangedBy => [
+                { Content => $Param{UserID} },
+            ],
+            ValidID => [
+                { Content => $Param{ValidID} },
+            ],
+    );
+
+    # compose new info tile entry
+    my @XMLHash = (
+        { otobo_infotile => [ \%MetaData ] },
+    );
+    
+    my $Success = $XMLObject->XMLHashUpdate(
+            Type        => 'InfoTiles',
+            Key         => $InfoTileID,
+            XMLHash     => \@XMLHash,
+    );
+    
+    if ( !$Success ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => 'Can not update info tile entry!',
+            );
+            return;
+    }
+
+    $Kernel::OM->Get('Kernel::System::Cache')->CleanUp(
+        Type => 'InfoTiles'
+    );
+
+    return $InfoTileID;
 
 }
 
