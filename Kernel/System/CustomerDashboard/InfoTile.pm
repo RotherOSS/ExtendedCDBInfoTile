@@ -62,12 +62,11 @@ sub new {
 
 add a new infotile entry
 
-    my $InfoTileID = $InfoTileObject->InfoTileAdd(
+    my $ID = $InfoTileObject->InfoTileAdd(
         UserID      => $UserID,
-        Permission  => \@Permission,
         StartDate   => $StartDate,
         StopDate    => $StopDate,
-        Heading     => $Heading,
+        Name     => $Name,
         Content     => $Content,
     );
 
@@ -76,11 +75,7 @@ add a new infotile entry
 sub InfoTileAdd {
     my ( $Self, %Param ) = @_;
 
-    if ( !$Param{Permission} ) {
-        $Param{Permission} = (0, 1, 2);
-    }
-
-    for my $Needed (qw(UserID Permission StartDate StopDate Heading Content)) {
+    for my $Needed (qw(UserID StartDate StopDate Name Content)) {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority    => 'error',
@@ -94,14 +89,14 @@ sub InfoTileAdd {
     my $XMLObject       = $Kernel::OM->Get('Kernel::System::XML');
     my $DateTimeObject  = $Kernel::OM->Create('Kernel::System::DateTime');
 
-    # get new InfoTileID
-    my $InfoTileID = 1;
+    # get new ID
+    my $ID = 1;
     my @Keys = $XMLObject->XMLHashSearch(
         Type => 'InfoTiles',
     );
     if(@Keys) {
         my @SortKeys = sort { $a <=> $b } @Keys;
-        $InfoTileID = $SortKeys[-1] + 1;
+        $ID = $SortKeys[-1] + 1;
     }
 
     use Data::Dumper;
@@ -126,11 +121,11 @@ sub InfoTileAdd {
     my $StopDateString = $StopDate->ToString();
 
     my %MetaData = (
-        InfoTileID => [
-            { Content => $InfoTileID },  
+        ID => [
+            { Content => $ID },  
         ],
-        Heading => [
-            { Content => $Param{Heading} },
+        Name => [
+            { Content => $Param{Name} },
         ],
         Content => [
             { Content => $Param{Content} },
@@ -140,9 +135,6 @@ sub InfoTileAdd {
         ],
         StopDate => [
             { Content => $StopDateString },
-        ],
-        Permission => [
-            { Content => $Param{Permission} },
         ],
         Created => [
             { Content => $TimeStamp },
@@ -167,7 +159,7 @@ sub InfoTileAdd {
     );
     my $Success = $XMLObject->XMLHashAdd(
         Type        => 'InfoTiles',
-        Key         => $InfoTileID,
+        Key         => $ID,
         XMLHash     => \@XMLHash,
     );
     if ( !$Success ) {
@@ -182,7 +174,7 @@ sub InfoTileAdd {
         Type => 'InfoTiles'
     );
 
-    return $InfoTileID;
+    return $ID;
 
 }
 
@@ -191,7 +183,7 @@ sub InfoTileAdd {
 get a hash ref of the info tile entries you need
 
     my $HashRef = $InfoTileObject->InfoTileGet(
-        InfoTileID  => '123',
+        ID  => '123',
     );
 
 =cut
@@ -200,16 +192,16 @@ sub InfoTileGet {
     my ( $Self, %Param ) = @_;
 
     # check necessary data
-    if ( !$Param{InfoTileID} ) {
+    if ( !$Param{ID} ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority    => 'error',
-            Message     => 'Need InfoTileID!'
+            Message     => 'Need ID!'
         );
     }
 
     my $CacheObject = $Kernel::OM->Get('Kernel::System::Cache');
 
-    my $CacheKey = "InfoTileGet::InfoTileID::$Param{InfoTileID}";
+    my $CacheKey = "InfoTileGet::ID::$Param{ID}";
     
     my $Cache = $CacheObject->Get(
         Type => 'InfoTiles',
@@ -222,13 +214,13 @@ sub InfoTileGet {
     # get hash from storage
     my @XMLHash = $Kernel::OM->Get('Kernel::System::XML')->XMLHashGet(
         Type => 'InfoTiles',
-        Key => $Param{InfoTileID},
+        Key => $Param{ID},
     );
 
     if ( !$XMLHash[0] ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
-            Message => "Can't get InfoTileID $Param{InfoTileID}!",
+            Message => "Can't get ID $Param{ID}!",
         );
         return;
     }
@@ -237,25 +229,14 @@ sub InfoTileGet {
     my $InfoTileXML = $XMLHash[0]->{otobo_infotile}->[1];
 
     # process all strings
-    $InfoTile{InfoTileID} = $Param{InfoTileID};
+    $InfoTile{ID} = $Param{ID};
     for my $Key (
-        qw(InfoTileID Heading Content StartDate StopDate Created CreatedBy Changed ChangedBy ValidID
+        qw(ID Name Content StartDate StopDate Created CreatedBy Changed ChangedBy ValidID
         )
         )
     {
         if ( defined $InfoTileXML->{$Key}->[1]->{Content} ) {
             $InfoTile{$Key} = $InfoTileXML->{$Key}->[1]->{Content};
-        }
-    }
-
-    # process all arrays
-    KEY:
-    for my $Key (qw(Permission)) {
-        next KEY if !$InfoTileXML->{$Key}->[1]->{Content};
-
-        $InfoTile{$Key} = ();
-        for my $Index ( 1 .. $#{ $InfoTileXML->{$Key} } ) {
-            push @{ $InfoTile{$Key} }, $InfoTileXML->{$Key}->[$Index]->{Content};
         }
     }
 
@@ -337,30 +318,11 @@ sub InfoTileListGet {
 
     my %Result;
 
-    for my $InfoTileID (@SearchResult) {
+    for my $ID (@SearchResult) {
 
         my $InfoTile = $Self->InfoTileGet(
-            InfoTileID => $InfoTileID
+            ID => $ID
         );
-
-        # check user permission
-        my $UserPermission = 0;
-        if ( $Param{AccessRw} || $Param{UserID} == 1 ) {
-            
-            $UserPermission = 1;
-        }
-        elsif ( $InfoTile->{Valid} ) {
-            
-            GROUPID:
-            for my $GroupID ( @{ $InfoTile->{Permission} } ) {
-                
-                next GROUPID if !$GroupID;
-                next GROUPID if !$GroupList{$GroupID};
-
-                $UserPermission = 1;
-                last GROUPID;
-            }
-        }
 
         # check if current date is within info tile range
         my $DateValid = 0;
@@ -381,9 +343,7 @@ sub InfoTileListGet {
             $DateValid = 1;
         }
 
-        if ( $UserPermission == 1 || $DateValid == 1 ) {
-            $Result{$InfoTileID} = $InfoTile;
-        }
+        $Result{$ID} = $InfoTile;
     }
 
     return \%Result;
@@ -399,11 +359,7 @@ update an existing infotile entry
 sub InfoTileUpdate {
     my ( $Self, %Param ) = @_;
 
-    if ( !$Param{Permission} ) {
-        $Param{Permission} = (0, 1, 2);
-    }
-
-    for my $Needed (qw(UserID InfoTileID Permission StartDate StopDate Heading Content)) {
+    for my $Needed (qw(UserID ID StartDate StopDate Name Content)) {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
@@ -420,10 +376,10 @@ sub InfoTileUpdate {
     my %InfoTileXML;
     
     # check necessary data
-    if ( !$Param{InfoTileID} ) {
+    if ( !$Param{ID} ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
-            Message => 'Need InfoTileID!'
+            Message => 'Need ID!'
         );
     }
 
@@ -449,8 +405,8 @@ sub InfoTileUpdate {
     my $StopDateString = $StopDate->ToString();
 
     my %MetaData = (
-            Heading => [
-                { Content => $Param{Heading} },
+            Name => [
+                { Content => $Param{Name} },
             ],
             Content => [
                 { Content => $Param{Content} },
@@ -460,9 +416,6 @@ sub InfoTileUpdate {
             ],
             StopDate => [
                 { Content => $StopDateString },
-            ],
-            Permission => [
-                { Content => $Param{Permission} },
             ],
             Changed => [
                 { Content => $TimeStamp },
@@ -482,7 +435,7 @@ sub InfoTileUpdate {
     
     my $Success = $XMLObject->XMLHashUpdate(
             Type        => 'InfoTiles',
-            Key         => $Param{InfoTileID},
+            Key         => $Param{ID},
             XMLHash     => \@XMLHash,
     );
     
@@ -498,7 +451,7 @@ sub InfoTileUpdate {
         Type => 'InfoTiles'
     );
 
-    return $Param{InfoTileID};
+    return $Param{ID};
 
 }
 
@@ -511,12 +464,8 @@ remove an infotile entry
 sub InfoTileDelete {
     my ( $Self, %Param ) = @_;
 
-    use Data::Dumper;
-    print STDERR "InfoTile.pm, L.515: " . Dumper(\%Param) . "\n";
-    
-
     # check needed stuff
-    for my $Key (qw(InfoTileID UserID)) {
+    for my $Key (qw(ID UserID)) {
         if ( !$Param{$Key} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
@@ -531,7 +480,7 @@ sub InfoTileDelete {
 
     my $Success = $XMLObject->XMLHashDelete(
         Type => 'InfoTiles',
-        Key => $Param{InfoTileID},
+        Key => $Param{ID},
     );
 
     if ( !$Success ) {

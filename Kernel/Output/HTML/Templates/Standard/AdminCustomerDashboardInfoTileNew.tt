@@ -74,17 +74,18 @@
                         </div>
                         <div class="Clear"></div>
 
-                        <label for="Heading" class="Mandatory"><span class="Marker">*</span> [% Translate("Heading") | html %]:</label>
+                        <label for="Name" class="Mandatory"><span class="Marker">*</span> [% Translate("Name") | html %]:</label>
                         <div class="Field">
-                            <input type="text" name="Heading" id="Heading" value="[% Data.Heading | html %]" class="W50pc Validate_Required [% Data.HeadingServerError | html %]" maxlength="70"/>
-                            <div id="HeadingError" class="TooltipErrorMessage"><p>[% Translate("This field is required.") | html %]</p></div>
-                            <div id="HeadingServerError" class="TooltipErrorMessage"><p>[% Translate("This field is required.") | html %]</p></div>
+                            <input type="text" name="Name" id="Name" value="[% Data.Name | html %]" class="W50pc Validate_Required [% Data.NameServerError | html %]" maxlength="70"/>
+                            <div id="NameError" class="TooltipErrorMessage"><p>[% Translate("This field is required.") | html %]</p></div>
+                            <div id="NameServerError" class="TooltipErrorMessage"><p>[% Translate("This field is required.") | html %]</p></div>
                         </div>
                         <div class="Clear SpacingTop"></div>
 
                         <label for="Content" class="Mandatory"><span class="Marker">*</span> [% Translate("Content") | html %]:</label>
-                        <div class="Field">
-                            <input type="text" name="Content" id="Content" value="[% Data.Content | html %]" class="W50pc Validate_Required [% Data.ContentServerError | html %]" maxlength="70"/>
+                        <div id="RichTextField" class="RichTextField">
+				<textarea id="RichText" class="RichText" name="Content" title="[% Translate("Content Body") | html %]" rows="15">[% Data.Content | html %]</textarea>
+                            <!--<input type="text" name="Content" id="Content" value="[% Data.Content | html %]" class="W50pc Validate_Required [% Data.ContentServerError | html %]" maxlength="70"/>-->
                             <div id="ContentError" class="TooltipErrorMessage"><p>[% Translate("This field is required.") | html %]</p></div>
                             <div id="ContentServerError" class="TooltipErrorMessage"><p>[% Translate("This field is required.") | html %]</p></div>
                         </div>

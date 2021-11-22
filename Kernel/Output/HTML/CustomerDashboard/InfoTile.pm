@@ -21,6 +21,8 @@ use warnings;
 
 our @ObjectDependencies = (
     'Kernel::Output::HTML::Layout',
+    'Kernel::System::CustomerDashboard::InfoTile',
+    'Kernel::System::Log',
 );
 
 sub new {
@@ -36,15 +38,42 @@ sub new {
 sub Run {
     my ( $Self, %Param ) = @_;
 
+    if ( !$Param{UserID} ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message => 'Need UserID!',
+        );
+        return;
+    }
+
+    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+    my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
+    my $InfoTileObject = $Kernel::OM->Get('Kernel::System::CustomerDashboard::InfoTile');
+
+    my $InfoTileEntries = $InfoTileObject->InfoTileListGet(
+        'UserID' => $Param{UserID},
+    );
+    
+    my $InfoTileListHTML;
+
+    for my $ID ( keys %{$InfoTileEntries} ) {
+        $InfoTileListHTML .= $LayoutObject->Output(
+            Template => '<div><p>[% Data.Content %]</p></div>',
+            Data => $InfoTileEntries->{$ID},
+        );
+    }
+
     my $Content = $Kernel::OM->Get('Kernel::Output::HTML::Layout')->Output(
-        TemplateFile => $Param{Template},
-        Data         => {
+        TemplateFile => 'Dashboard/TileInfoEntries',
+        Data => {
             TileID => $Param{TileID},
+            InfoTileListHTML => $InfoTileListHTML,
             %{ $Param{Config} },
         },
     );
 
     return $Content;
+
 }
 
 1;

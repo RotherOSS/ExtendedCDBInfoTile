@@ -42,7 +42,7 @@ sub Run {
     my $SessionObject           = $Kernel::OM->Get('Kernel::System::AuthSession');
     my $CustomerDashboardInfoTileObject = $Kernel::OM->Get('Kernel::System::CustomerDashboard::InfoTile');
 
-    my $InfoTileID = $ParamObject->GetParam( Param => 'InfoTileID' ) || '';
+    my $ID = $ParamObject->GetParam( Param => 'ID' ) || '';
     my $WantSessionID       = $ParamObject->GetParam( Param => 'WantSessionID' )       || '';
 
     my $SessionVisibility = 'Collapsed';
@@ -58,7 +58,7 @@ sub Run {
         $SessionObject->RemoveSessionID( SessionID => $WantSessionID );
         return $LayoutObject->Redirect(
             OP =>
-                "Action=AdminCustomerDashboardInfoTile;Subaction=CustomerDashboardInfoTileEdit;InfoTileID=$InfoTileID;Kill=1"
+                "Action=AdminCustomerDashboardInfoTile;Subaction=CustomerDashboardInfoTileEdit;ID=$ID;Kill=1"
         );
     }
 
@@ -79,7 +79,7 @@ sub Run {
 
         return $LayoutObject->Redirect(
             OP =>
-                "Action=AdminCustomerDashboardInfoTile;Subaction=CustomerDashboardInfoTileEdit;InfoTileID=$InfoTileID;KillAll=1"
+                "Action=AdminCustomerDashboardInfoTile;Subaction=CustomerDashboardInfoTileEdit;ID=$ID;KillAll=1"
         );
     }
 
@@ -131,10 +131,10 @@ sub Run {
             };
         }
 
-        if ( !$CustomerDashboardInfoTileData->{Heading} ) {
+        if ( !$CustomerDashboardInfoTileData->{Name} ) {
 
             # add server error class
-            $Error{HeadingServerError} = 'ServerError';
+            $Error{NameServerError} = 'ServerError';
 
         }
 
@@ -163,18 +163,17 @@ sub Run {
             );
         }
 
-        my $InfoTileID = $CustomerDashboardInfoTileObject->InfoTileAdd(
+        my $ID = $CustomerDashboardInfoTileObject->InfoTileAdd(
             StartDate        => $CustomerDashboardInfoTileData->{StartDate},
             StopDate         => $CustomerDashboardInfoTileData->{StopDate},
-            Heading          => $CustomerDashboardInfoTileData->{Heading},
+            Name          => $CustomerDashboardInfoTileData->{Name},
             Content          => $CustomerDashboardInfoTileData->{Content},
-            Permission       => $CustomerDashboardInfoTileData->{Permission},
             ValidID          => $CustomerDashboardInfoTileData->{ValidID},
             UserID           => $Self->{UserID},
         );
 
         # show error if can't create
-        if ( !$InfoTileID ) {
+        if ( !$ID ) {
             return $LayoutObject->ErrorScreen(
                 Message => Translatable('There was an error creating the System Maintenance'),
             );
@@ -188,7 +187,7 @@ sub Run {
         {
             return $LayoutObject->Redirect(
                 OP =>
-                    "Action=$Self->{Action};Subaction=CustomerDashboardInfoTileEdit;InfoTileID=$InfoTileID;Notification=Add"
+                    "Action=$Self->{Action};Subaction=CustomerDashboardInfoTileEdit;ID=$ID;Notification=Add"
             );
         }
         else {
@@ -204,16 +203,16 @@ sub Run {
         # initialize notify container
         my @NotifyData;
 
-        # check for InfoTileID
-        if ( !$InfoTileID ) {
+        # check for ID
+        if ( !$ID ) {
             return $LayoutObject->ErrorScreen(
-                Message => Translatable('Need InfoTileID!'),
+                Message => Translatable('Need ID!'),
             );
         }
 
         # get customerdashboard info data
         my $CustomerDashboardInfoTileData = $CustomerDashboardInfoTileObject->InfoTileGet(
-            InfoTileID     => $InfoTileID,
+            ID     => $ID,
             UserID => $Self->{UserID},
         );
 
@@ -235,8 +234,8 @@ sub Run {
         if ( !IsHashRefWithData($CustomerDashboardInfoTileData) ) {
             return $LayoutObject->ErrorScreen(
                 Message => $LayoutObject->{LanguageObject}->Translate(
-                    'Could not get data for InfoTileID %s',
-                    $InfoTileID
+                    'Could not get data for ID %s',
+                    $ID
                 ),
             );
         }
@@ -285,7 +284,7 @@ sub Run {
 
         return $Self->_ShowEdit(
             %Param,
-            InfoTileID   => $InfoTileID,
+            ID   => $ID,
             CustomerDashboardInfoTileData => $CustomerDashboardInfoTileData,
             NotifyData            => \@NotifyData,
             SessionVisibility     => $SessionVisibility,
@@ -336,10 +335,10 @@ sub Run {
 
         }
 
-        if ( !$CustomerDashboardInfoTileData->{Heading} ) {
+        if ( !$CustomerDashboardInfoTileData->{Name} ) {
 
             # add server error class
-            $Error{HeadingServerError} = 'ServerError';
+            $Error{NameServerError} = 'ServerError';
 
         }
 
@@ -356,7 +355,7 @@ sub Run {
                 %Error,
                 %Param,
                 NotifyData            => \@NotifyData,
-                InfoTileID   => $InfoTileID,
+                ID   => $ID,
                 CustomerDashboardInfoTileData => $CustomerDashboardInfoTileData,
                 Action                => 'Edit',
             );
@@ -366,12 +365,11 @@ sub Run {
         my $UpdateResult = $CustomerDashboardInfoTileObject->InfoTileUpdate(
             StartDate        => $CustomerDashboardInfoTileData->{StartDate},
             StopDate         => $CustomerDashboardInfoTileData->{StopDate},
-            Heading          => $CustomerDashboardInfoTileData->{Heading},
+            Name          => $CustomerDashboardInfoTileData->{Name},
             Content          => $CustomerDashboardInfoTileData->{Content},
-            Permission       => $CustomerDashboardInfoTileData->{Permission},
             ValidID          => $CustomerDashboardInfoTileData->{ValidID},
             UserID           => $Self->{UserID},
-            InfoTileID               => $InfoTileID,
+            ID               => $ID,
         );
 
         # show error if can't create
@@ -389,7 +387,7 @@ sub Run {
         {
             return $LayoutObject->Redirect(
                 OP =>
-                    "Action=$Self->{Action};Subaction=CustomerDashboardInfoTileEdit;InfoTileID=$InfoTileID;Notification=Update"
+                    "Action=$Self->{Action};Subaction=CustomerDashboardInfoTileEdit;ID=$ID;Notification=Update"
             );
         }
         else {
@@ -406,22 +404,22 @@ sub Run {
         # challenge token check for write action
         $LayoutObject->ChallengeTokenCheck();
 
-        if ( !$InfoTileID ) {
+        if ( !$ID ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Message  => "No Customer Dashboard Info Tile ID $InfoTileID",
+                Message  => "No Customer Dashboard Info Tile ID $ID",
                 Priority => 'error',
             );
         }
 
         my $Delete = $CustomerDashboardInfoTileObject->InfoTileDelete(
-            InfoTileID     => $InfoTileID,
+            ID     => $ID,
             UserID => $Self->{UserID},
         );
         if ( !$Delete ) {
             return $LayoutObject->ErrorScreen(
                 Message => $LayoutObject->{LanguageObject}->Translate(
                     'Was not possible to delete the CustomerDashboardInfoTile entry: %s!',
-                    $InfoTileID
+                    $ID
                 ),
             );
         }
@@ -447,9 +445,9 @@ sub Run {
         }
         else {
 
-            for my $LocalInfoTileID ( keys %{$CustomerDashboardInfoTileList} ) {
+            for my $LocalID ( keys %{$CustomerDashboardInfoTileList} ) {
 
-                my $CustomerDashboardInfoTile = %{$CustomerDashboardInfoTileList}{$LocalInfoTileID};
+                my $CustomerDashboardInfoTile = %{$CustomerDashboardInfoTileList}{$LocalID};
                 
                 # set the valid state
                 $CustomerDashboardInfoTile->{ValidID} = $Kernel::OM->Get('Kernel::System::Valid')->ValidLookup( ValidID => $CustomerDashboardInfoTile->{ValidID} );
@@ -675,9 +673,9 @@ sub _GetParams {
     # get parameters from web browser
     for my $ParamName (
         qw(
-        InfoTileID StartDateYear StartDateMonth StartDateDay StartDateHour StartDateMinute 
+        ID StartDateYear StartDateMonth StartDateDay StartDateHour StartDateMinute 
         StopDateYear StopDateMonth StopDateDay StopDateHour StopDateMinute
-        Heading Content ValidID Permission )
+        Name Content ValidID )
         )
     {
         $GetParam->{$ParamName} = $ParamObject->GetParam( Param => $ParamName );

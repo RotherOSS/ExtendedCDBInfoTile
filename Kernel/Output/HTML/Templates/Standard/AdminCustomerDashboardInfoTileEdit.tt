@@ -55,7 +55,7 @@
                 <form action="[% Env("CGIHandle") %]" method="post" class="Validate PreventMultipleSubmits">
                     <input type="hidden" name="Action" value="[% Env("Action") %]"/>
                     <input type="hidden" name="Subaction" value="CustomerDashboardInfoTileEditAction"/>
-                    <input type="hidden" name="InfoTileID" value="[% Data.InfoTileID | html %]"/>
+                    <input type="hidden" name="ID" value="[% Data.ID | html %]"/>
                     <input type="hidden" name="ContinueAfterSave" id="ContinueAfterSave" value=""/>
                     <fieldset class="TableLike">
 
@@ -75,11 +75,11 @@
                         </div>
                         <div class="Clear"></div>
 
-                        <label for="Heading" class="Mandatory"><span class="Marker">*</span> [% Translate("Heading") | html %]:</label>
+                        <label for="Name" class="Mandatory"><span class="Marker">*</span> [% Translate("Name") | html %]:</label>
                         <div class="Field">
-                            <input type="text" name="Heading" id="Heading" value="[% Data.Heading | html %]" class="W50pc Validate_Required [% Data.HeadingServerError | html %]" maxlength="70"/>
-                            <div id="HeadingError" class="TooltipErrorMessage"><p>[% Translate("This field is required.") | html %]</p></div>
-                            <div id="HeadingServerError" class="TooltipErrorMessage"><p>[% Translate("This field is required.") | html %]</p></div>
+                            <input type="text" name="Name" id="Name" value="[% Data.Name | html %]" class="W50pc Validate_Required [% Data.NameServerError | html %]" maxlength="70"/>
+                            <div id="NameError" class="TooltipErrorMessage"><p>[% Translate("This field is required.") | html %]</p></div>
+                            <div id="NameServerError" class="TooltipErrorMessage"><p>[% Translate("This field is required.") | html %]</p></div>
                         </div>
                         <div class="Clear SpacingTop"></div>
 
