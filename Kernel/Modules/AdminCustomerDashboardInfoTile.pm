@@ -37,13 +37,13 @@ sub new {
 sub Run {
     my ( $Self, %Param ) = @_;
 
-    my $LayoutObject            = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
-    my $ParamObject             = $Kernel::OM->Get('Kernel::System::Web::Request');
-    my $SessionObject           = $Kernel::OM->Get('Kernel::System::AuthSession');
+    my $LayoutObject                    = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
+    my $ParamObject                     = $Kernel::OM->Get('Kernel::System::Web::Request');
+    my $SessionObject                   = $Kernel::OM->Get('Kernel::System::AuthSession');
     my $CustomerDashboardInfoTileObject = $Kernel::OM->Get('Kernel::System::CustomerDashboard::InfoTile');
 
-    my $ID = $ParamObject->GetParam( Param => 'ID' ) || '';
-    my $WantSessionID       = $ParamObject->GetParam( Param => 'WantSessionID' )       || '';
+    my $ID            = $ParamObject->GetParam( Param => 'ID' )            || '';
+    my $WantSessionID = $ParamObject->GetParam( Param => 'WantSessionID' ) || '';
 
     my $SessionVisibility = 'Collapsed';
 
@@ -142,7 +142,7 @@ sub Run {
 
             # add server error class
             $Error{ContentServerError} = 'ServerError';
-        
+
         }
 
         if ( !$CustomerDashboardInfoTileData->{ValidID} ) {
@@ -157,19 +157,19 @@ sub Run {
             return $Self->_ShowEdit(
                 %Error,
                 %Param,
-                NotifyData            => \@NotifyData,
+                NotifyData                    => \@NotifyData,
                 CustomerDashboardInfoTileData => $CustomerDashboardInfoTileData,
-                Action                => 'New',
+                Action                        => 'New',
             );
         }
 
         my $ID = $CustomerDashboardInfoTileObject->InfoTileAdd(
-            StartDate        => $CustomerDashboardInfoTileData->{StartDate},
-            StopDate         => $CustomerDashboardInfoTileData->{StopDate},
-            Name          => $CustomerDashboardInfoTileData->{Name},
-            Content          => $CustomerDashboardInfoTileData->{Content},
-            ValidID          => $CustomerDashboardInfoTileData->{ValidID},
-            UserID           => $Self->{UserID},
+            StartDate => $CustomerDashboardInfoTileData->{StartDate},
+            StopDate  => $CustomerDashboardInfoTileData->{StopDate},
+            Name      => $CustomerDashboardInfoTileData->{Name},
+            Content   => $CustomerDashboardInfoTileData->{Content},
+            ValidID   => $CustomerDashboardInfoTileData->{ValidID},
+            UserID    => $Self->{UserID},
         );
 
         # show error if can't create
@@ -223,7 +223,7 @@ sub Run {
             my $DateTimeObject = $Kernel::OM->Create(
                 'Kernel::System::DateTime',
                 ObjectParams => {
-                    Epoch => $CustomerDashboardInfoTileData->{$Key},
+                    String => $CustomerDashboardInfoTileData->{$Key},
                 }
             );
             $CustomerDashboardInfoTileData->{ $Key . 'TimeStamp' } =
@@ -284,11 +284,11 @@ sub Run {
 
         return $Self->_ShowEdit(
             %Param,
-            ID   => $ID,
+            ID                            => $ID,
             CustomerDashboardInfoTileData => $CustomerDashboardInfoTileData,
-            NotifyData            => \@NotifyData,
-            SessionVisibility     => $SessionVisibility,
-            Action                => 'Edit',
+            NotifyData                    => \@NotifyData,
+            SessionVisibility             => $SessionVisibility,
+            Action                        => 'Edit',
         );
 
     }
@@ -329,7 +329,7 @@ sub Run {
         }
 
         if ( !$CustomerDashboardInfoTileData->{Content} ) {
-            
+
             # add server error class
             $Error{ContentServerError} = 'ServerError';
 
@@ -354,22 +354,22 @@ sub Run {
             return $Self->_ShowEdit(
                 %Error,
                 %Param,
-                NotifyData            => \@NotifyData,
-                ID   => $ID,
+                NotifyData                    => \@NotifyData,
+                ID                            => $ID,
                 CustomerDashboardInfoTileData => $CustomerDashboardInfoTileData,
-                Action                => 'Edit',
+                Action                        => 'Edit',
             );
         }
 
         # otherwise update configuration and return to edit screen
         my $UpdateResult = $CustomerDashboardInfoTileObject->InfoTileUpdate(
-            StartDate        => $CustomerDashboardInfoTileData->{StartDate},
-            StopDate         => $CustomerDashboardInfoTileData->{StopDate},
-            Name          => $CustomerDashboardInfoTileData->{Name},
-            Content          => $CustomerDashboardInfoTileData->{Content},
-            ValidID          => $CustomerDashboardInfoTileData->{ValidID},
-            UserID           => $Self->{UserID},
-            ID               => $ID,
+            StartDate => $CustomerDashboardInfoTileData->{StartDate},
+            StopDate  => $CustomerDashboardInfoTileData->{StopDate},
+            Name      => $CustomerDashboardInfoTileData->{Name},
+            Content   => $CustomerDashboardInfoTileData->{Content},
+            ValidID   => $CustomerDashboardInfoTileData->{ValidID},
+            UserID    => $Self->{UserID},
+            ID        => $ID,
         );
 
         # show error if can't create
@@ -448,7 +448,7 @@ sub Run {
             for my $LocalID ( keys %{$CustomerDashboardInfoTileList} ) {
 
                 my $CustomerDashboardInfoTile = %{$CustomerDashboardInfoTileList}{$LocalID};
-                
+
                 # set the valid state
                 $CustomerDashboardInfoTile->{ValidID} = $Kernel::OM->Get('Kernel::System::Valid')->ValidLookup( ValidID => $CustomerDashboardInfoTile->{ValidID} );
 
@@ -514,8 +514,8 @@ sub _ShowEdit {
 
         # time setting if available
         if (
-            $CustomerDashboardInfoTileData->{ $Prefix }
-            && $CustomerDashboardInfoTileData->{ $Prefix }
+            $CustomerDashboardInfoTileData->{$Prefix}
+            && $CustomerDashboardInfoTileData->{$Prefix}
             =~ m{^(\d\d\d\d)-(\d\d)-(\d\d)\s(\d\d):(\d\d):(\d\d)$}xi
             )
         {
@@ -673,7 +673,7 @@ sub _GetParams {
     # get parameters from web browser
     for my $ParamName (
         qw(
-        ID StartDateYear StartDateMonth StartDateDay StartDateHour StartDateMinute 
+        ID StartDateYear StartDateMonth StartDateDay StartDateHour StartDateMinute
         StopDateYear StopDateMonth StopDateDay StopDateHour StopDateMinute
         Name Content ValidID )
         )

@@ -20,6 +20,7 @@ use strict;
 use warnings;
 
 our @ObjectDependencies = (
+    'Kernel::Config',
     'Kernel::Output::HTML::Layout',
     'Kernel::System::CustomerDashboard::InfoTile',
     'Kernel::System::Log',
@@ -41,33 +42,17 @@ sub Run {
     if ( !$Param{UserID} ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
-            Message => 'Need UserID!',
+            Message  => 'Need UserID!',
         );
         return;
     }
 
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
     my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
-    my $InfoTileObject = $Kernel::OM->Get('Kernel::System::CustomerDashboard::InfoTile');
-
-    my $InfoTileEntries = $InfoTileObject->InfoTileListGet(
-        'UserID' => $Param{UserID},
-    );
-    
-    my $InfoTileListHTML;
-
-    for my $ID ( keys %{$InfoTileEntries} ) {
-        $InfoTileListHTML .= $LayoutObject->Output(
-            Template => '<div><p>[% Data.Content %]</p></div>',
-            Data => $InfoTileEntries->{$ID},
-        );
-    }
-
-    my $Content = $Kernel::OM->Get('Kernel::Output::HTML::Layout')->Output(
+    my $Content      = $Kernel::OM->Get('Kernel::Output::HTML::Layout')->Output(
         TemplateFile => 'Dashboard/TileInfoEntries',
-        Data => {
+        Data         => {
             TileID => $Param{TileID},
-            InfoTileListHTML => $InfoTileListHTML,
             %{ $Param{Config} },
         },
     );

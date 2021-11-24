@@ -36,40 +36,59 @@ sub new {
 sub Run {
     my ( $Self, %Param ) = @_;
 
-    my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
+    my $ParamObject                     = $Kernel::OM->Get('Kernel::System::Web::Request');
+    my $LayoutObject                    = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
     my $CustomerDashboardInfoTileObject = $Kernel::OM->Get('Kernel::System::CustomerDashboard::InfoTile');
+    my $HTMLUtilsObject                 = $Kernel::OM->Get('Kernel::System::HTMLUtils');
 
     if ( $Self->{Subaction} eq 'InfoTile' ) {
-       
-        my $InfoTileContent = ''; 
-        my $InfoTiles = $CustomerDashboardInfoTileObject->InfoTileListGet(
+
+        my $InfoTileContent = '';
+        my $InfoTiles       = $CustomerDashboardInfoTileObject->InfoTileListGet(
             UserID => $Self->{UserID},
         );
 
-        if ( $InfoTiles ) {
-        
-            for my $Key ( keys %{$InfoTiles} ) {
-                my %InfoTile = %{$InfoTiles->{$Key}};
-                $InfoTileContent .= $InfoTile{Content} . "<br>";    
-            }
+        if ($InfoTiles) {
 
+            my $CurrentDate = $Kernel::OM->Create('Kernel::System::DateTime');
+
+            for my $Key ( keys %{$InfoTiles} ) {
+                my %InfoTile  = %{ $InfoTiles->{$Key} };
+                my $StartDate = $Kernel::OM->Create(
+                    'Kernel::System::DateTime',
+                    ObjectParams => {
+                        String => $InfoTile{StartDate}
+                    }
+                );
+                my $StopDate = $Kernel::OM->Create(
+                    'Kernel::System::DateTime',
+                    ObjectParams => {
+                        String => $InfoTile{StopDate}
+                    }
+                );
+
+                if (
+                    ( $CurrentDate->Compare( DateTimeObject => $StartDate ) > 0 )
+                    && ( $StopDate->Compare( DateTimeObject => $CurrentDate ) > 0 )
+                    && $InfoTile{ValidID} eq '1'
+                    )
+                {
+                    $InfoTileContent .= $InfoTile{Content} . "<br>";
+                }
+            }
         }
 
-        my $Content = $LayoutObject->Output(
-            Template => '[% Data.HTML %]',
-            Data =>  {
-                HTML => $InfoTileContent
-            }
+        my $Content = $HTMLUtilsObject->DocumentComplete(
+            String  => $InfoTileContent,
+            Charset => 'utf-8',
         );
 
-        my %Data = (
-            Content => $Content,
-            ContentAlternative => '',
-            ContentID => '',
-            ContentType => 'text/html; charset="utf-8"',
-            Disposition => "inline",
-            FileSizeRaw => btyes::length($Content),
+        return $LayoutObject->Attachment(
+            Type        => 'inline',
+            ContentType => 'text/html',
+            Content     => $Content,
         );
-
     }
 }
+
+1;

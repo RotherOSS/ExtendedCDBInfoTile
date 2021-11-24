@@ -25,8 +25,8 @@ sub Data {
     # $$START$$
 
     # own translations
-    $Self->{Translation}->{'Customer Dashboard Info Tile'}   = 'Info-Kachel Kunden-Dashboard';
-    $Self->{Translation}->{'Unlock'} = 'Lulu';
+    $Self->{Translation}->{'Customer Dashboard Info Tile'} = 'Info-Kachel Kunden-Dashboard';
+    $Self->{Translation}->{'Unlock'}                       = 'Lulu';
 
     # or an other syntax would be
     #    $Self->{Translation} = {
@@ -37,7 +37,7 @@ sub Data {
     #    };
 
     # $$STOP$$
-    
+
     return;
 }
 

@@ -10,7 +10,8 @@
                 <Item Key="Template">Dashboard/TileInfoEntries</Item>
                 <Item Key="Config">
                     <Hash>
-                        <Item Key="Text">For your information</Item>
+                        <Item Key="TextColor">#00023c</Item>
+                        <Item Key="BackgroundColor">#fff</Item>
                     </Hash>
                 </Item>
             </Hash>

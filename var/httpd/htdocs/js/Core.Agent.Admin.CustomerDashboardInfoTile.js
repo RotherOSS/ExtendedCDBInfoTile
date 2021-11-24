@@ -39,7 +39,7 @@ Core.Agent.Admin = Core.Agent.Admin || {};
     TargetNS.Init = function () {
 
         // Initialize table filter
-        Core.UI.Table.InitTableFilter($('#FilterCustomerDashboardInfoTiles'), $('#CustomerDashboardInfoTiles'));
+        Core.UI.Table.InitTableFilter($('#FilterInfoTileEntries'), $('#InfoTileEntries'));
 
         // Initialize bind click on delete action
         $('.CustomerDashboardInfoTileDelete').on('click', function (Event) {
