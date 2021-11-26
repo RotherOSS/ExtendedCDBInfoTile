@@ -50,10 +50,14 @@ sub Run {
 
         if ($InfoTiles) {
 
+            # sort info tiles, sorting order: config order, start date, changed date, created date
+            my @Tiles       = values %{$InfoTiles};
+            my @TilesSorted = $Self->_OrderTiles( Tiles => \@Tiles );
+
             my $CurrentDate = $Kernel::OM->Create('Kernel::System::DateTime');
 
-            for my $Key ( keys %{$InfoTiles} ) {
-                my %InfoTile  = %{ $InfoTiles->{$Key} };
+            for my $InfoTileRef (@TilesSorted) {
+                my %InfoTile  = %{$InfoTileRef};
                 my $StartDate = $Kernel::OM->Create(
                     'Kernel::System::DateTime',
                     ObjectParams => {
@@ -67,9 +71,13 @@ sub Run {
                     }
                 );
 
+                print STDERR "CustomerDashboardContent.pm, L.74: " . $InfoTile{StopDate} . "\n";
+                use Data::Dumper;
+                print STDERR "CustomerDashboardContent.pm, L.76: " . Dumper($StopDate) . "\n";
+
                 if (
                     ( $CurrentDate->Compare( DateTimeObject => $StartDate ) > 0 )
-                    && ( $StopDate->Compare( DateTimeObject => $CurrentDate ) > 0 )
+                    && ( $StopDate->Compare( DateTimeObject => $CurrentDate ) > 0 || $StopDate )
                     && $InfoTile{ValidID} eq '1'
                     )
                 {
@@ -89,6 +97,98 @@ sub Run {
             Content     => $Content,
         );
     }
+}
+
+sub _OrderTiles {
+
+    my ( $Self, %Param ) = @_;
+
+    my @Tiles        = @{ $Param{Tiles} };
+    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+
+    my $UsedTiles      = $ConfigObject->Get('CustomerDashboard::Tiles');
+    my $TileConfig     = $UsedTiles->{'InfoTile-01'}->{Config};
+    my %TileEntryOrder = %{ $TileConfig->{Order} };
+    my @Result;
+    my @DateSort;
+    for my $TileRef (@Tiles) {
+        my %Tile = %{$TileRef};
+        if ( $TileEntryOrder{ $Tile{ID} } ) {
+            $Tile{Order} = $TileEntryOrder{ $Tile{ID} };
+            push @Result, \%Tile;
+        }
+        else {
+            push @DateSort, \%Tile;
+        }
+    }
+    @Result   = sort { $a->{Order} cmp $b->{Order} } @Result;
+    @DateSort = sort _ByDates @DateSort;
+
+    push @Result, @DateSort;
+
+    return @Result;
+
+}
+
+sub _ByDates {
+
+    # get date objects for $a
+    my $AStartDate = $Kernel::OM->Create(
+        'Kernel::System::DateTime',
+        ObjectParams => {
+            String => $a->{StartDate}
+        }
+    );
+    my $AChangedDate = $Kernel::OM->Create(
+        'Kernel::System::DateTime',
+        ObjectParams => {
+            String => $a->{Changed}
+        }
+    );
+    my $ACreatedDate = $Kernel::OM->Create(
+        'Kernel::System::DateTime',
+        ObjectParams => {
+            String => $a->{Created}
+        }
+    );
+
+    # get date objects for $b
+    my $BStartDate = $Kernel::OM->Create(
+        'Kernel::System::DateTime',
+        ObjectParams => {
+            String => $b->{StartDate}
+        }
+    );
+    my $BChangedDate = $Kernel::OM->Create(
+        'Kernel::System::DateTime',
+        ObjectParams => {
+            String => $b->{Changed}
+        }
+    );
+    my $BCreatedDate = $Kernel::OM->Create(
+        'Kernel::System::DateTime',
+        ObjectParams => {
+            String => $b->{Created}
+        }
+    );
+
+    if ( $BStartDate->Compare( DateTimeObject => $AStartDate ) == 0 ) {
+        if ( defined $AChangedDate && defined $BChangedDate ) {
+            if ( $BChangedDate->Compare( DateTimeObject => $AChangedDate ) == 0 ) {
+                return $BCreatedDate->Compare( DateTimeObject => $ACreatedDate );
+            }
+            else {
+                return $BChangedDate->Compare( DateTimeObject => $AChangedDate );
+            }
+        }
+        else {
+            return $BCreatedDate->Compare( DateTimeObject => $ACreatedDate );
+        }
+    }
+    else {
+        return $BStartDate->Compare( DateTimeObject => $AStartDate );
+    }
+
 }
 
 1;

@@ -23,6 +23,7 @@ use Kernel::Language qw(Translatable);
 use Kernel::System::VariableCheck qw(:all);
 
 our @ObjectDependencies = (
+    'Kernel::Config',
     'Kernel::Language',
     'Kernel::System::Cache',
     'Kernel::System::Group',
@@ -78,7 +79,7 @@ add a new infotile entry
 sub InfoTileAdd {
     my ( $Self, %Param ) = @_;
 
-    for my $Needed (qw(UserID StartDate StopDate Name Content Groups)) {
+    for my $Needed (qw(UserID Name Content Groups)) {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
@@ -276,7 +277,7 @@ sub InfoTileGet {
 get a list of info tile entries by user id
 
     my $InfoTileList = $InfoTileObject->InfoTileListGet(
-       UserID => $UserID 
+       UserID => $UserID
     );
 
 =cut
@@ -296,7 +297,7 @@ sub InfoTileListGet {
 
     my @SearchResult;
 
-    my $CacheObject = $Kernel::OM->Get('Kernel::System::Cache');
+    my $CacheObject  = $Kernel::OM->Get('Kernel::System::Cache');
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
     my $CacheKey = "InfoTileListGet::XMLSearch";
@@ -355,7 +356,7 @@ update an existing infotile entry
 sub InfoTileUpdate {
     my ( $Self, %Param ) = @_;
 
-    for my $Needed (qw(UserID ID StartDate StopDate Name Content)) {
+    for my $Needed (qw(UserID ID Name Content)) {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
@@ -492,16 +493,16 @@ sub InfoTileDelete {
     }
 
     my $Permission = $Self->InfoTilePermission(
-        ID => $Param{ID},
+        ID     => $Param{ID},
         UserID => $Param{UserID},
-        Type => 'rw',
+        Type   => 'rw',
     );
     my $Success = 0;
-    
+
     # get needed objects
     my $XMLObject = $Kernel::OM->Get('Kernel::System::XML');
 
-    if ( $Permission ) {
+    if ($Permission) {
         my $Success = $XMLObject->XMLHashDelete(
             Type => 'InfoTiles',
             Key  => $Param{ID},

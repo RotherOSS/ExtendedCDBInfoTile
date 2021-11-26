@@ -467,9 +467,11 @@ sub Run {
         }
         else {
 
-            for my $LocalID ( keys %{$CustomerDashboardInfoTileList} ) {
+            # sort items; sorting priorities: start date, changed date, created date
+            my @Tiles = values ( %{$CustomerDashboardInfoTileList} );
+            my @TilesSorted = sort _ByDates @Tiles;
 
-                my $CustomerDashboardInfoTile = %{$CustomerDashboardInfoTileList}{$LocalID};
+            for my $CustomerDashboardInfoTile ( @TilesSorted ) {
 
                 # set the valid state
                 $CustomerDashboardInfoTile->{ValidID} = $Kernel::OM->Get('Kernel::System::Valid')->ValidLookup( ValidID => $CustomerDashboardInfoTile->{ValidID} );
@@ -490,7 +492,7 @@ sub Run {
 
                 my $Access = $CustomerDashboardInfoTileObject->InfoTilePermission(
                     Type   => 'rw',
-                    ID     => $LocalID,
+                    ID     => $CustomerDashboardInfoTile->{ID},
                     UserID => $Self->{UserID}
                 );
 
@@ -528,6 +530,64 @@ sub Run {
         $Output .= $LayoutObject->Footer();
         return $Output;
     }
+
+}
+
+sub _ByDates {
+
+    # get date objects for $a
+    my $AStartDate = $Kernel::OM->Create(
+        'Kernel::System::DateTime',
+        ObjectParams => {
+            String => $a->{StartDate}
+        }
+    );
+    my $AChangedDate = $Kernel::OM->Create(
+        'Kernel::System::DateTime',
+        ObjectParams => {
+            String => $a->{Changed}
+        }
+    );
+    my $ACreatedDate = $Kernel::OM->Create(
+        'Kernel::System::DateTime',
+        ObjectParams => {
+            String => $a->{Created}
+        }
+    );
+
+    # get date objects for $b
+    my $BStartDate = $Kernel::OM->Create(
+        'Kernel::System::DateTime',
+        ObjectParams => {
+            String => $b->{StartDate}
+        }
+    );
+    my $BChangedDate = $Kernel::OM->Create(
+        'Kernel::System::DateTime',
+        ObjectParams => {
+            String => $b->{Changed}
+        }
+    );
+    my $BCreatedDate = $Kernel::OM->Create(
+        'Kernel::System::DateTime',
+        ObjectParams => {
+            String => $b->{Created}
+        }
+    );
+
+    if ( $BStartDate->Compare( DateTimeObject => $AStartDate ) == 0) {
+        if ( $BChangedDate->Compare( DateTimeObject => $AChangedDate ) == 0 ) {
+            return $BCreatedDate->Compare( DateTimeObject => $ACreatedDate );
+        }
+        else {
+            return $BChangedDate->Compare( DateTimeObject => $AChangedDate );
+        }
+    } 
+    else {
+        return $BStartDate->Compare( DateTimeObject => $AStartDate );
+    }
+
+    return 0;
 
 }
 
@@ -569,7 +629,7 @@ sub _ShowEdit {
         YearPeriodPast   => 0,
         YearPeriodFuture => 1,
         StartDateClass   => $Param{StartDateInvalid} || ' ',
-        Validate         => 1,
+        StartDateOptional    => 1,
     );
 
     # stop date info
@@ -581,7 +641,7 @@ sub _ShowEdit {
         YearPeriodPast   => 0,
         YearPeriodFuture => 1,
         StopDateClass    => $Param{StopDateInvalid} || ' ',
-        Validate         => 1,
+        StopDateOptional => 1,
     );
 
     # group selection
@@ -734,13 +794,23 @@ sub _GetParams {
     # get parameters from web browser
     for my $ParamName (
         qw(
-        ID StartDateYear StartDateMonth StartDateDay StartDateHour StartDateMinute
-        StopDateYear StopDateMonth StopDateDay StopDateHour StopDateMinute
-        Name Content ValidID )
+        ID Name Content ValidID )
         )
     {
         $GetParam->{$ParamName} = $ParamObject->GetParam( Param => $ParamName );
     }
+
+    # date handling: check if dates are used
+    for my $Prefix (qw(Start Stop)) {
+        if ( defined $ParamObject->GetParam( Param => $Prefix . "DateUsed") ) {
+            for my $Item (qw(Year Month Day Hour Minute)) {
+                            $GetParam->{$Prefix . "Date" . $Item} = $ParamObject->GetParam( Param => $Prefix . "Date" . $Item );
+            }
+        }
+    }
+
+    use Data::Dumper;
+    print STDERR "AdminCustomerDashboardInfoTile.pm, L.815: " . Dumper($GetParam) . "\n";
 
     my @Groups = $ParamObject->GetArray( Param => 'Groups' );
 
