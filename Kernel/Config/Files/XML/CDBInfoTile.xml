@@ -12,6 +12,10 @@
                     <Hash>
                         <Item Key="TextColor">#00023c</Item>
                         <Item Key="BackgroundColor">#fff</Item>
+                        <Item Key="Order">
+                            <Hash>
+                            </Hash>
+                        </Item>
                     </Hash>
                 </Item>
             </Hash>

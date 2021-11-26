@@ -90,6 +90,18 @@
                         </div>
                         <div class="Clear SpacingTop"></div>
 
+                        <label class="[% Data.GroupSelectionMandatory %]" for="GroupSelection"><span class="Marker">*</span> [% Translate("Group Selection") | html %]:</label>
+                        <div class="Field">
+                            [% Data.GroupSelection %]
+                            <div id="GroupSelectionError" class="TooltipErrorMessage">
+                                <p>[% Translate("This field is required.") | html %]</p>
+                            </div>
+                            <div id="GroupSelectionServerError" class="TooltipErrorMessage">
+                                <p>[% Translate("This field is required.") | html %]</p>
+                            </div>
+                        </div>
+                        <div class="Clear SpacingTop"></div>
+
                         <label class="Mandatory" for="ValidID"><span class="Marker">*</span> [% Translate("Validity") | html %]:</label>
                         <div class="Field">
                             [% Data.ValidOption %]

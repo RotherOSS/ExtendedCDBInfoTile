@@ -79,6 +79,7 @@
                             <th>[% Translate("Stop date") | html %]</th>
                             <th>[% Translate("Name") | html %]</th>
                             <th>[% Translate("Content") | html %]</th>
+                            <th>[% Translate("Groups") | html %]</th>
                             <th class="Center">[% Translate("Delete") | html %]</th>
                         </tr>
                     </thead>
@@ -93,6 +94,7 @@
                             </td>
                             <td>[% Data.Name | truncate(80) | html %]</td>
                             <td>[% Data.Content | truncate(80) | html %]</td>
+                            <td>[% Data.Groups | html %]</td>
                             <td>[% Translate(Data.ValidID) | html %]</td>
 
                             <td class="Center">

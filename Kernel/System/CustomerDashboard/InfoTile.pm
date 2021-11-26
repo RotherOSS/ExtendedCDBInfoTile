@@ -70,6 +70,7 @@ add a new infotile entry
         StopDate    => $StopDate,
         Name     => $Name,
         Content     => $Content,
+        Groups  => $Groups (optional when user is admin)
     );
 
 =cut
@@ -77,7 +78,7 @@ add a new infotile entry
 sub InfoTileAdd {
     my ( $Self, %Param ) = @_;
 
-    for my $Needed (qw(UserID StartDate StopDate Name Content)) {
+    for my $Needed (qw(UserID StartDate StopDate Name Content Groups)) {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
@@ -137,6 +138,9 @@ sub InfoTileAdd {
         ],
         StopDate => [
             { Content => $StopDateString },
+        ],
+        Groups => [
+            { Content => $Param{Groups} }
         ],
         Created => [
             { Content => $TimeStamp },
@@ -202,6 +206,7 @@ sub InfoTileGet {
     }
 
     my $CacheObject = $Kernel::OM->Get('Kernel::System::Cache');
+    my $GroupObject = $Kernel::OM->Get('Kernel::System::Group');
 
     my $CacheKey = "InfoTileGet::ID::$Param{ID}";
 
@@ -233,7 +238,7 @@ sub InfoTileGet {
     # process all strings
     $InfoTile{ID} = $Param{ID};
     for my $Key (
-        qw(ID Name Content StartDate StopDate Created CreatedBy Changed ChangedBy ValidID
+        qw(ID Name Content StartDate StopDate Created CreatedBy Changed ChangedBy ValidID Groups
         )
         )
     {
@@ -270,6 +275,10 @@ sub InfoTileGet {
 
 get a list of info tile entries by user id
 
+    my $InfoTileList = $InfoTileObject->InfoTileListGet(
+       UserID => $UserID 
+    );
+
 =cut
 
 sub InfoTileListGet {
@@ -288,6 +297,7 @@ sub InfoTileListGet {
     my @SearchResult;
 
     my $CacheObject = $Kernel::OM->Get('Kernel::System::Cache');
+    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
     my $CacheKey = "InfoTileListGet::XMLSearch";
 
@@ -311,38 +321,13 @@ sub InfoTileListGet {
 
     }
 
-    # get user groups
-    my %GroupList = $Kernel::OM->Get('Kernel::System::Group')->PermissionUserGet(
-        UserID => $Param{UserID},
-        Type   => 'ro',
-    );
-
+    # fetch items
     my %Result;
-
     for my $ID (@SearchResult) {
 
         my $InfoTile = $Self->InfoTileGet(
             ID => $ID
         );
-
-        # check if current date is within info tile range
-        my $DateValid      = 0;
-        my $CurrentDateObj = $Kernel::OM->Create('Kernel::System::DateTime');
-        my $StartDateObj   = $Kernel::OM->Create(
-            'Kernel::System::DateTime',
-            ObjectParams => {
-                String => $InfoTile->{StartDate}
-            }
-        );
-        my $StopDateObj = $Kernel::OM->Create(
-            'Kernel::System::DateTime',
-            ObjectParams => {
-                String => $InfoTile->{StopDate}
-            }
-        );
-        if ( $StartDateObj->Compare( DateTimeObject => $CurrentDateObj ) && $CurrentDateObj->Compare( DateTimeObject => $StopDateObj ) ) {
-            $DateValid = 1;
-        }
 
         $Result{$ID} = $InfoTile;
     }
@@ -354,6 +339,16 @@ sub InfoTileListGet {
 =head2 InfoTileUpdate()
 
 update an existing infotile entry
+
+    my $ID = $InfoTileObject->InfoTileUpdate(
+        UserID => $UserID,
+        ID => $ID,
+        StartDate => $StartDate,
+        StopDate => $StopDate,
+        Name => $Name,
+        Content => $Content,
+        Groups => $Groups (optional when user is admin)
+    );
 
 =cut
 
@@ -368,6 +363,14 @@ sub InfoTileUpdate {
             );
             return;
         }
+    }
+
+    if ( !$Param{Groups} && $Param{LightAdmin} ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => "Need Groups.",
+        );
+        return;
     }
 
     # date start shouldn't be higher than stop date
@@ -422,6 +425,9 @@ sub InfoTileUpdate {
         StopDate => [
             { Content => $StopDateString },
         ],
+        Groups => [
+            { Content => $Param{Groups} }
+        ],
         Changed => [
             { Content => $TimeStamp },
         ],
@@ -464,6 +470,11 @@ sub InfoTileUpdate {
 
 remove an infotile entry
 
+    my $Deleted = $InfoTileObject->InfoTileDelete(
+        ID => $ID,
+        UserID => $UserID
+    );
+
 =cut
 
 sub InfoTileDelete {
@@ -480,20 +491,88 @@ sub InfoTileDelete {
         }
     }
 
+    my $Permission = $Self->InfoTilePermission(
+        ID => $Param{ID},
+        UserID => $Param{UserID},
+        Type => 'rw',
+    );
+    my $Success = 0;
+    
     # get needed objects
     my $XMLObject = $Kernel::OM->Get('Kernel::System::XML');
 
-    my $Success = $XMLObject->XMLHashDelete(
-        Type => 'InfoTiles',
-        Key  => $Param{ID},
-    );
+    if ( $Permission ) {
+        my $Success = $XMLObject->XMLHashDelete(
+            Type => 'InfoTiles',
+            Key  => $Param{ID},
+        );
+    }
 
-    if ( !$Success ) {
+    if ( !$Permission || !$Success ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message  => 'Can not delete info tile entry!',
         );
         return;
+    }
+
+    return 1;
+
+}
+
+=head2 InfoTilePermission()
+
+return boolean permission of user for info tile entry
+
+    my $Permission = $InfoTileObject->InfoTilePermission(
+        ID => $ID,
+        UserID => $UserID,
+        Type => $Type
+    );
+
+=cut
+
+sub InfoTilePermission {
+
+    my ( $Self, %Param ) = @_;
+
+    # check for needed stuff
+    for my $Needed (qw(Type ID UserID)) {
+        if ( !$Param{$Needed} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $Needed",
+            );
+            return;
+        }
+    }
+
+    # get needed objects
+    my $GroupObject = $Kernel::OM->Get('Kernel::System::Group');
+
+    my %GroupList = $GroupObject->PermissionUserGroupGet(
+        UserID => $Param{UserID},
+        Type   => $Param{Type},
+    );
+
+    my $InfoTile = $Self->InfoTileGet(
+        ID => $Param{ID},
+    );
+
+    for my $GroupName ( values %GroupList ) {
+        if ( $GroupName eq 'admin' ) {
+            return 1;
+        }
+    }
+
+    if ( !%GroupList ) {
+        return 0;
+    }
+
+    for my $GroupID ( keys %{ $InfoTile->{Groups} } ) {
+        if ( $GroupList{$GroupID} ) {
+            return 0;
+        }
     }
 
     return 1;

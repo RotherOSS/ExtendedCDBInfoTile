@@ -31,6 +31,11 @@ sub new {
     my $Self = {%Param};
     bless( $Self, $Type );
 
+    # LightAdmin Param
+    if ( !$Param{AccessRw} && $Param{AccessRo} ) {
+        $Self->{LightAdmin} = 1;
+    }
+
     return $Self;
 }
 
@@ -168,6 +173,7 @@ sub Run {
             StopDate  => $CustomerDashboardInfoTileData->{StopDate},
             Name      => $CustomerDashboardInfoTileData->{Name},
             Content   => $CustomerDashboardInfoTileData->{Content},
+            Groups    => $CustomerDashboardInfoTileData->{Groups},
             ValidID   => $CustomerDashboardInfoTileData->{ValidID},
             UserID    => $Self->{UserID},
         );
@@ -215,6 +221,21 @@ sub Run {
             ID     => $ID,
             UserID => $Self->{UserID},
         );
+
+        my $Access = $CustomerDashboardInfoTileObject->InfoTilePermission(
+            Type   => 'rw',
+            ID     => $ID,
+            UserID => $Self->{UserID}
+        );
+
+        if ( !$CustomerDashboardInfoTileData || !$Access ) {
+            return $LayoutObject->NoPermission(
+                Message => Translatable(
+                    "This Entry does not exist, or you don't have permissions to access it in its current state."
+                ),
+                withHeader => 'no'
+            );
+        }
 
         # include time stamps on the correct key
         for my $Key (qw(StartDate StopDate)) {
@@ -367,6 +388,7 @@ sub Run {
             StopDate  => $CustomerDashboardInfoTileData->{StopDate},
             Name      => $CustomerDashboardInfoTileData->{Name},
             Content   => $CustomerDashboardInfoTileData->{Content},
+            Groups    => $CustomerDashboardInfoTileData->{Groups},
             ValidID   => $CustomerDashboardInfoTileData->{ValidID},
             UserID    => $Self->{UserID},
             ID        => $ID,
@@ -466,13 +488,22 @@ sub Run {
                     $CustomerDashboardInfoTile->{ $Key . 'TimeStamp' } = $DateTimeObject->ToString();
                 }
 
-                # create blocks
-                $LayoutObject->Block(
-                    Name => 'ViewRow',
-                    Data => {
-                        %{$CustomerDashboardInfoTile},
-                    },
+                my $Access = $CustomerDashboardInfoTileObject->InfoTilePermission(
+                    Type   => 'rw',
+                    ID     => $LocalID,
+                    UserID => $Self->{UserID}
                 );
+
+                if ($Access) {
+
+                    # create blocks
+                    $LayoutObject->Block(
+                        Name => 'ViewRow',
+                        Data => {
+                            %{$CustomerDashboardInfoTile},
+                        },
+                    );
+                }
             }
         }
 
@@ -503,6 +534,7 @@ sub Run {
 sub _ShowEdit {
     my ( $Self, %Param ) = @_;
 
+    my $GroupObject   = $Kernel::OM->Get('Kernel::System::Group');
     my $LayoutObject  = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
     my $SessionObject = $Kernel::OM->Get('Kernel::System::AuthSession');
 
@@ -550,6 +582,35 @@ sub _ShowEdit {
         YearPeriodFuture => 1,
         StopDateClass    => $Param{StopDateInvalid} || ' ',
         Validate         => 1,
+    );
+
+    # group selection
+    my %GroupList;
+    if ( $Self->{LightAdmin} ) {
+        %GroupList = $GroupObject->PermissionUserGroupGet(
+            UserID => $Param{UserID},
+            Type   => 'rw',
+        );
+        $Param{GroupSelectionMandatory} = 'Mandatory';
+    }
+    else {
+        %GroupList = $GroupObject->GroupList();
+    }
+
+    my @Selected;
+    if ( $CustomerDashboardInfoTileData->{Groups} ) {
+        @Selected = split( ',', $CustomerDashboardInfoTileData->{Groups} );
+    }
+    else {
+
+    }
+
+    $Param{GroupSelection} = $LayoutObject->BuildSelection(
+        Data       => \%GroupList,
+        Name       => 'Groups',
+        Class      => 'Modernize Validate_Required ' . ( $Param{GroupSelectionServerError} || '' ),
+        Multiple   => 1,
+        SelectedID => \@Selected,
     );
 
     # get valid list
@@ -679,6 +740,12 @@ sub _GetParams {
         )
     {
         $GetParam->{$ParamName} = $ParamObject->GetParam( Param => $ParamName );
+    }
+
+    my @Groups = $ParamObject->GetArray( Param => 'Groups' );
+
+    if (@Groups) {
+        $GetParam->{Groups} = join ',', @Groups;
     }
 
     $Param{ShowLoginMessage} ||= 0;
