@@ -57,27 +57,32 @@ sub Run {
             my $CurrentDate = $Kernel::OM->Create('Kernel::System::DateTime');
 
             for my $InfoTileRef (@TilesSorted) {
-                my %InfoTile  = %{$InfoTileRef};
-                my $StartDate = $Kernel::OM->Create(
-                    'Kernel::System::DateTime',
-                    ObjectParams => {
-                        String => $InfoTile{StartDate}
-                    }
-                );
-                my $StopDate = $Kernel::OM->Create(
-                    'Kernel::System::DateTime',
-                    ObjectParams => {
-                        String => $InfoTile{StopDate}
-                    }
-                );
+                my %InfoTile = %{$InfoTileRef};
+                my $StartDate;
+                if ( $InfoTile{StartDateUsed} ) {
+                    $StartDate = $Kernel::OM->Create(
+                        'Kernel::System::DateTime',
+                        ObjectParams => {
+                            String => $InfoTile{StartDate}
+                        }
+                    );
+                }
+                my $StopDate;
+                if ( $InfoTile{StopDateUsed} ) {
+                    $StopDate = $Kernel::OM->Create(
+                        'Kernel::System::DateTime',
+                        ObjectParams => {
+                            String => $InfoTile{StopDate}
+                        }
+                    );
+                }
 
-                print STDERR "CustomerDashboardContent.pm, L.74: " . $InfoTile{StopDate} . "\n";
-                use Data::Dumper;
-                print STDERR "CustomerDashboardContent.pm, L.76: " . Dumper($StopDate) . "\n";
+                print STDERR "CustomerDashboardContent.pm, L.80: " . $CurrentDate->ToString() . "\n";
+                print STDERR "CustomerDashboardContent.pm, L.81: " . $StopDate->ToString() . "\n";
 
                 if (
-                    ( $CurrentDate->Compare( DateTimeObject => $StartDate ) > 0 )
-                    && ( $StopDate->Compare( DateTimeObject => $CurrentDate ) > 0 || $StopDate )
+                    ( ( $StartDate && $CurrentDate->Compare( DateTimeObject => $StartDate ) > 0 ) || !$StartDate )
+                    && ( ( $StopDate && $StopDate->Compare( DateTimeObject => $CurrentDate ) > 0 ) || !$StopDate )
                     && $InfoTile{ValidID} eq '1'
                     )
                 {

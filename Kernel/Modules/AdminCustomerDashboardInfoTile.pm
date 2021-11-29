@@ -334,8 +334,8 @@ sub Run {
         # a StartDate should always be defined before StopDate
         if (
             (
-                defined $CustomerDashboardInfoTileData->{StartDate}
-                && defined $CustomerDashboardInfoTileData->{StopDate}
+                $CustomerDashboardInfoTileData->{StartDate}
+                && $CustomerDashboardInfoTileData->{StopDate}
             )
             && $CustomerDashboardInfoTileData->{StartDate} > $CustomerDashboardInfoTileData->{StopDate}
             )
@@ -384,14 +384,16 @@ sub Run {
 
         # otherwise update configuration and return to edit screen
         my $UpdateResult = $CustomerDashboardInfoTileObject->InfoTileUpdate(
-            StartDate => $CustomerDashboardInfoTileData->{StartDate},
-            StopDate  => $CustomerDashboardInfoTileData->{StopDate},
-            Name      => $CustomerDashboardInfoTileData->{Name},
-            Content   => $CustomerDashboardInfoTileData->{Content},
-            Groups    => $CustomerDashboardInfoTileData->{Groups},
-            ValidID   => $CustomerDashboardInfoTileData->{ValidID},
-            UserID    => $Self->{UserID},
-            ID        => $ID,
+            StartDate     => $CustomerDashboardInfoTileData->{StartDate},
+            StopDate      => $CustomerDashboardInfoTileData->{StopDate},
+            StartDateUsed => $CustomerDashboardInfoTileData->{StartDateUsed},
+            StopDateUsed  => $CustomerDashboardInfoTileData->{StopDateUsed},
+            Name          => $CustomerDashboardInfoTileData->{Name},
+            Content       => $CustomerDashboardInfoTileData->{Content},
+            Groups        => $CustomerDashboardInfoTileData->{Groups},
+            ValidID       => $CustomerDashboardInfoTileData->{ValidID},
+            UserID        => $Self->{UserID},
+            ID            => $ID,
         );
 
         # show error if can't create
@@ -468,10 +470,10 @@ sub Run {
         else {
 
             # sort items; sorting priorities: start date, changed date, created date
-            my @Tiles = values ( %{$CustomerDashboardInfoTileList} );
+            my @Tiles       = values( %{$CustomerDashboardInfoTileList} );
             my @TilesSorted = sort _ByDates @Tiles;
 
-            for my $CustomerDashboardInfoTile ( @TilesSorted ) {
+            for my $CustomerDashboardInfoTile (@TilesSorted) {
 
                 # set the valid state
                 $CustomerDashboardInfoTile->{ValidID} = $Kernel::OM->Get('Kernel::System::Valid')->ValidLookup( ValidID => $CustomerDashboardInfoTile->{ValidID} );
@@ -479,15 +481,22 @@ sub Run {
                 # include time stamps on the correct key
                 for my $Key (qw(StartDate StopDate)) {
 
-                    my $DateTimeObject = $Kernel::OM->Create(
-                        'Kernel::System::DateTime',
-                        ObjectParams => {
-                            String => $CustomerDashboardInfoTile->{$Key},
-                        },
-                    );
-                    $DateTimeObject->ToTimeZone( TimeZone => $Self->{UserTimeZone} );
+                    if ( $CustomerDashboardInfoTile->{ $Key . "Used" } ) {
 
-                    $CustomerDashboardInfoTile->{ $Key . 'TimeStamp' } = $DateTimeObject->ToString();
+                        my $DateTimeObject = $Kernel::OM->Create(
+                            'Kernel::System::DateTime',
+                            ObjectParams => {
+                                String => $CustomerDashboardInfoTile->{$Key},
+                            },
+                        );
+
+                        $DateTimeObject->ToTimeZone( TimeZone => $Self->{UserTimeZone} );
+
+                        $CustomerDashboardInfoTile->{ $Key . 'TimeStamp' } = $DateTimeObject->ToString();
+                    }
+                    else {
+                        $CustomerDashboardInfoTile->{ $Key . 'TimeStamp' } = '';
+                    }
                 }
 
                 my $Access = $CustomerDashboardInfoTileObject->InfoTilePermission(
@@ -536,12 +545,15 @@ sub Run {
 sub _ByDates {
 
     # get date objects for $a
-    my $AStartDate = $Kernel::OM->Create(
-        'Kernel::System::DateTime',
-        ObjectParams => {
-            String => $a->{StartDate}
-        }
-    );
+    my $AStartDate = '';
+    if ( $a->{StartDate} ) {
+        $AStartDate = $Kernel::OM->Create(
+            'Kernel::System::DateTime',
+            ObjectParams => {
+                String => $a->{StartDate}
+            }
+        );
+    }
     my $AChangedDate = $Kernel::OM->Create(
         'Kernel::System::DateTime',
         ObjectParams => {
@@ -556,12 +568,15 @@ sub _ByDates {
     );
 
     # get date objects for $b
-    my $BStartDate = $Kernel::OM->Create(
-        'Kernel::System::DateTime',
-        ObjectParams => {
-            String => $b->{StartDate}
-        }
-    );
+    my $BStartDate = '';
+    if ( $b->{StartDate} ) {
+        $BStartDate = $Kernel::OM->Create(
+            'Kernel::System::DateTime',
+            ObjectParams => {
+                String => $b->{StartDate}
+            }
+        );
+    }
     my $BChangedDate = $Kernel::OM->Create(
         'Kernel::System::DateTime',
         ObjectParams => {
@@ -575,16 +590,26 @@ sub _ByDates {
         }
     );
 
-    if ( $BStartDate->Compare( DateTimeObject => $AStartDate ) == 0) {
+    if ( $BStartDate && $AStartDate ) {
+        if ( $BStartDate->Compare( DateTimeObject => $AStartDate ) == 0 ) {
+            if ( $BChangedDate->Compare( DateTimeObject => $AChangedDate ) == 0 ) {
+                return $BCreatedDate->Compare( DateTimeObject => $ACreatedDate );
+            }
+            else {
+                return $BChangedDate->Compare( DateTimeObject => $AChangedDate );
+            }
+        }
+        else {
+            return $BStartDate->Compare( DateTimeObject => $AStartDate );
+        }
+    }
+    else {
         if ( $BChangedDate->Compare( DateTimeObject => $AChangedDate ) == 0 ) {
             return $BCreatedDate->Compare( DateTimeObject => $ACreatedDate );
         }
         else {
             return $BChangedDate->Compare( DateTimeObject => $AChangedDate );
         }
-    } 
-    else {
-        return $BStartDate->Compare( DateTimeObject => $AStartDate );
     }
 
     return 0;
@@ -624,12 +649,13 @@ sub _ShowEdit {
     $Param{StartDateString} = $LayoutObject->BuildDateSelection(
         %{$CustomerDashboardInfoTileData},
         %{ $TimeConfig{StartDate} },
-        Prefix           => 'StartDate',
-        Format           => 'DateInputFormatLong',
-        YearPeriodPast   => 0,
-        YearPeriodFuture => 1,
-        StartDateClass   => $Param{StartDateInvalid} || ' ',
-        StartDateOptional    => 1,
+        Prefix            => 'StartDate',
+        Format            => 'DateInputFormatLong',
+        YearPeriodPast    => 0,
+        YearPeriodFuture  => 1,
+        StartDateClass    => $Param{StartDateInvalid} || ' ',
+        StartDateOptional => 1,
+        StartDateUsed     => $Param{StartDateUsed} || 0,
     );
 
     # stop date info
@@ -642,6 +668,7 @@ sub _ShowEdit {
         YearPeriodFuture => 1,
         StopDateClass    => $Param{StopDateInvalid} || ' ',
         StopDateOptional => 1,
+        StopDateUsed     => $Param{StopDateUsed} || 0,
     );
 
     # group selection
@@ -802,15 +829,15 @@ sub _GetParams {
 
     # date handling: check if dates are used
     for my $Prefix (qw(Start Stop)) {
-        if ( defined $ParamObject->GetParam( Param => $Prefix . "DateUsed") ) {
-            for my $Item (qw(Year Month Day Hour Minute)) {
-                            $GetParam->{$Prefix . "Date" . $Item} = $ParamObject->GetParam( Param => $Prefix . "Date" . $Item );
+        if ( $ParamObject->GetParam( Param => $Prefix . "DateUsed" ) ) {
+            for my $Item (qw(Year Month Day Hour Minute Used)) {
+                $GetParam->{ $Prefix . "Date" . $Item } = $ParamObject->GetParam( Param => $Prefix . "Date" . $Item );
             }
         }
+        else {
+            $GetParam->{ $Prefix . 'DateUsed' } = $ParamObject->GetParam( Param => $Prefix . 'DateUsed' );
+        }
     }
-
-    use Data::Dumper;
-    print STDERR "AdminCustomerDashboardInfoTile.pm, L.815: " . Dumper($GetParam) . "\n";
 
     my @Groups = $ParamObject->GetArray( Param => 'Groups' );
 
@@ -822,35 +849,41 @@ sub _GetParams {
 
     ITEM:
     for my $Item (qw(StartDate StopDate)) {
+        if ( $GetParam->{ $Item . "Used" } ) {
 
-        my %DateStructure;
+            my %DateStructure;
 
-        # check needed stuff
-        PERIOD:
-        for my $Period (qw(Year Month Day Hour Minute)) {
+            # check needed stuff
+            PERIOD:
+            for my $Period (qw(Year Month Day Hour Minute)) {
 
-            if ( !defined $GetParam->{ $Item . $Period } ) {
+                if ( !defined $GetParam->{ $Item . $Period } ) {
+                    $Param{Error}->{ $Item . 'Invalid' } = 'ServerError';
+                    next ITEM;
+                }
+
+                $DateStructure{$Period} = $GetParam->{ $Item . $Period };
+            }
+
+            my $DateTimeObject = $Kernel::OM->Create(
+                'Kernel::System::DateTime',
+                ObjectParams => {
+                    %DateStructure,
+                    TimeZone => $Self->{UserTimeZone},
+                },
+            );
+            if ( !$DateTimeObject ) {
                 $Param{Error}->{ $Item . 'Invalid' } = 'ServerError';
                 next ITEM;
             }
 
-            $DateStructure{$Period} = $GetParam->{ $Item . $Period };
+            $GetParam->{$Item} = $DateTimeObject->ToEpoch();
+            $GetParam->{ $Item . 'TimeStamp' } = $DateTimeObject->ToString();
         }
-
-        my $DateTimeObject = $Kernel::OM->Create(
-            'Kernel::System::DateTime',
-            ObjectParams => {
-                %DateStructure,
-                TimeZone => $Self->{UserTimeZone},
-            },
-        );
-        if ( !$DateTimeObject ) {
-            $Param{Error}->{ $Item . 'Invalid' } = 'ServerError';
-            next ITEM;
+        else {
+            $GetParam->{$Item} = '';
+            $GetParam->{ $Item . 'TimeStamp' } = '';
         }
-
-        $GetParam->{$Item} = $DateTimeObject->ToEpoch();
-        $GetParam->{ $Item . 'TimeStamp' } = $DateTimeObject->ToString();
     }
 
     return $GetParam;

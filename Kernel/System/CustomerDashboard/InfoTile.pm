@@ -106,23 +106,27 @@ sub InfoTileAdd {
     # requesting current time stamp
     my $TimeStamp = $DateTimeObject->ToString();
 
-    my $StartDate = $Kernel::OM->Create(
-        'Kernel::System::DateTime',
-        ObjectParams => {
-            Epoch => $Param{StartDate},
-        }
-    );
+    my $StartDateString = '';
+    if ( $Param{StartDateUsed} ) {
+        my $StartDate = $Kernel::OM->Create(
+            'Kernel::System::DateTime',
+            ObjectParams => {
+                Epoch => $Param{StartDate},
+            }
+        );
+        $StartDateString = $StartDate->ToString();
+    }
 
-    my $StartDateString = $StartDate->ToString();
-
-    my $StopDate = $Kernel::OM->Create(
-        'Kernel::System::DateTime',
-        ObjectParams => {
-            Epoch => $Param{StopDate},
-        }
-    );
-
-    my $StopDateString = $StopDate->ToString();
+    my $StopDateString = '';
+    if ( $Param{StopDateUsed} ) {
+        my $StopDate = $Kernel::OM->Create(
+            'Kernel::System::DateTime',
+            ObjectParams => {
+                Epoch => $Param{StopDate},
+            }
+        );
+        $StopDateString = $StopDate->ToString();
+    }
 
     my %MetaData = (
         ID => [
@@ -239,7 +243,7 @@ sub InfoTileGet {
     # process all strings
     $InfoTile{ID} = $Param{ID};
     for my $Key (
-        qw(ID Name Content StartDate StopDate Created CreatedBy Changed ChangedBy ValidID Groups
+        qw(ID Name Content StartDate StartDateUsed StopDate StopDateUsed Created CreatedBy Changed ChangedBy ValidID Groups
         )
         )
     {
@@ -375,7 +379,7 @@ sub InfoTileUpdate {
     }
 
     # date start shouldn't be higher than stop date
-    return if ( $Param{StartDate} > $Param{StopDate} );
+    return if ( $Param{StartDateUsed} && $Param{StopDateUsed} && $Param{StartDate} > $Param{StopDate} );
 
     # declaration of the hash
     my %InfoTileXML;
@@ -395,23 +399,27 @@ sub InfoTileUpdate {
     # requesting current time stamp
     my $TimeStamp = $DateTimeObject->ToString();
 
-    my $StartDate = $Kernel::OM->Create(
-        'Kernel::System::DateTime',
-        ObjectParams => {
-            Epoch => $Param{StartDate},
-        }
-    );
+    my $StartDateString = '';
+    if ( $Param{StartDateUsed} ) {
+        my $StartDate = $Kernel::OM->Create(
+            'Kernel::System::DateTime',
+            ObjectParams => {
+                Epoch => $Param{StartDate},
+            }
+        );
+        $StartDateString = $StartDate->ToString();
+    }
 
-    my $StartDateString = $StartDate->ToString();
-
-    my $StopDate = $Kernel::OM->Create(
-        'Kernel::System::DateTime',
-        ObjectParams => {
-            Epoch => $Param{StopDate},
-        }
-    );
-
-    my $StopDateString = $StopDate->ToString();
+    my $StopDateString = '';
+    if ( $Param{StopDateUsed} ) {
+        my $StopDate = $Kernel::OM->Create(
+            'Kernel::System::DateTime',
+            ObjectParams => {
+                Epoch => $Param{StopDate},
+            }
+        );
+        $StopDateString = $StopDate->ToString();
+    }
 
     my %MetaData = (
         Name => [
@@ -423,8 +431,14 @@ sub InfoTileUpdate {
         StartDate => [
             { Content => $StartDateString },
         ],
+        StartDateUsed => [
+            { Content => $Param{StartDateUsed} }
+        ],
         StopDate => [
             { Content => $StopDateString },
+        ],
+        StopDateUsed => [
+            { Content => $Param{StopDateUsed} }
         ],
         Groups => [
             { Content => $Param{Groups} }
@@ -503,7 +517,7 @@ sub InfoTileDelete {
     my $XMLObject = $Kernel::OM->Get('Kernel::System::XML');
 
     if ($Permission) {
-        my $Success = $XMLObject->XMLHashDelete(
+        $Success = $XMLObject->XMLHashDelete(
             Type => 'InfoTiles',
             Key  => $Param{ID},
         );
