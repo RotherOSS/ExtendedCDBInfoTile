@@ -59,7 +59,7 @@
                     <input type="hidden" name="ContinueAfterSave" id="ContinueAfterSave" value=""/>
                     <fieldset class="TableLike">
 
-                        <label class="Mandatory" ><span class="Marker">*</span> [% Translate("Start date") | html %]:</label>
+                        <label>[% Translate("Start date") | html %]:</label>
                         <div class="Field">
                             [% Data.StartDateString %]
                             <div id="StartDateDayServerError" class="TooltipErrorMessage"><p>[% Translate("Date invalid!") | html %]</p></div>
@@ -67,7 +67,7 @@
                         </div>
                         <div class="Clear"></div>
 
-                        <label class="Mandatory"><span class="Marker">*</span> [% Translate("Stop date") | html %]:</label>
+                        <label>[% Translate("Stop date") | html %]:</label>
                         <div class="Field">
                             [% Data.StopDateString %]
                             <div id="StopDateDayServerError" class="TooltipErrorMessage"><p>[% Translate("Date invalid!") | html %]</p></div>
@@ -91,7 +91,7 @@
                         </div>
                         <div class="Clear SpacingTop"></div>
 
-                            <label class="[% Data.GroupSelectionMandatory %]" for="GroupSelection"><span class="Mark    er">*</span> [% Translate("Group Selection") | html %]:</label>
+                            <label class="[% Data.GroupSelectionMandatory %]" for="GroupSelection">[% IF Data.GroupSelectionMandatory %]<span class="Marker">*</span> [% END %][% Translate("Group Selection") | html %]:</label>
                             <div class="Field">
                                 [% Data.GroupSelection %]
                             <div id="GroupSelectionError" class="TooltipErrorMessage">

@@ -89,8 +89,6 @@
                             <td>[% Data.StopDateTimeStamp | html %]</td>
                             <td><a class="AsBlock" href="[% Env("Baselink") %]Action=AdminCustomerDashboardInfoTile;Subaction=CustomerDashboardInfoTileEdit;ID=[% Data.ID | uri%]">[% Data.Name | truncate(80) | html %]</a></td>
                             <td>[% Data.Content | truncate(80) | html %]</td>
-                            <td>[% Translate(Data.ValidID) | html %]</td>
-
                             <td class="Center">
                                 <a class="TrashCan CustomerDashboardInfoInfoTileDelete" href="[% Env("Baselink") %]Action=[% Env("Action") %];Subaction=Delete;ID=[% Data.ID | uri %];[% Env("ChallengeTokenParam") | html %]" title="[% Translate("Delete Info Tile Entry") | html %]">
                                     <i class="fa fa-trash-o"></i>

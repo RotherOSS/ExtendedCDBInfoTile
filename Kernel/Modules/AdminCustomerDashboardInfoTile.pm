@@ -692,12 +692,24 @@ sub _ShowEdit {
 
     }
 
+    my $GroupSelectionClass;
+    if ( $Self->{LightAdmin} ) {
+        $GroupSelectionClass = 'Modernize Validate_Required ' . ( $Param{GroupSelectionServerError} || '' );
+    }
+    else {
+        $GroupSelectionClass = 'Modernize ' . ( $Param{GroupSelectionServerError} || '' );
+    }
+
     $Param{GroupSelection} = $LayoutObject->BuildSelection(
         Data       => \%GroupList,
         Name       => 'Groups',
-        Class      => 'Modernize Validate_Required ' . ( $Param{GroupSelectionServerError} || '' ),
+        Class      => $GroupSelectionClass,
         Multiple   => 1,
         SelectedID => \@Selected,
+    );
+
+    $LayoutObject->SetRichTextParameters(
+        Data => \%Param,
     );
 
     # get valid list

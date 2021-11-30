@@ -8,11 +8,16 @@
     <License>GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007</License>
     <Description Lang="en">Provides an info tile for the customer dashboard, which can be configured via a separate admin section.</Description>
     <Filelist>
+        <File Permission="660" Location="Kernel/Config/Files/XML/CDBInfoTile.xml" />
         <File Permission="660" Location="Kernel/Config/Files/XML/ExtendedCDBInfoTile.xml" />
         <File Permission="660" Location="Kernel/Language/de_ExtendedCDBInfoTile.pm" />
         <File Permission="660" Location="Kernel/Modules/AdminCustomerDashboardInfoTile.pm" />
+        <File Permission="660" Location="Kernel/Modules/CustomerDashboardContent.pm" />
+        <File Permission="660" Location="Kernel/Output/HTML/CustomerDashboard/InfoTile.pm" />
+        <File Permission="660" Location="Kernel/Output/HTML/Templates/Standard/AdminCustomerDashboardInfoTileEdit.tt" />
         <File Permission="660" Location="Kernel/Output/HTML/Templates/Standard/AdminCustomerDashboardInfoTileNew.tt" />
         <File Permission="660" Location="Kernel/Output/HTML/Templates/Standard/AdminCustomerDashboardInfoTile.tt" />
+        <File Permission="660" Location="Kernel/Output/HTML/Templates/Standard/Dashboard/TileInfoEntries.tt" />
         <File Permission="660" Location="Kernel/System/CustomerDashboard/InfoTile.pm" />
         <File Permission="660" Location="var/httpd/htdocs/js/Core.Agent.Admin.CustomerDashboardInfoTile.js" />
     </Filelist>
