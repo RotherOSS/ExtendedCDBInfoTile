@@ -119,8 +119,8 @@ sub Run {
         # a StartDate should always be defined before StopDate
         if (
             (
-                defined $CustomerDashboardInfoTileData->{StartDate}
-                && defined $CustomerDashboardInfoTileData->{StopDate}
+                $CustomerDashboardInfoTileData->{StartDateUsed}
+                && $CustomerDashboardInfoTileData->{StopDateUsed}
             )
             && $CustomerDashboardInfoTileData->{StartDate} > $CustomerDashboardInfoTileData->{StopDate}
             )
@@ -141,6 +141,11 @@ sub Run {
             # add server error class
             $Error{NameServerError} = 'ServerError';
 
+            # add notification
+            push @NotifyData, {
+                Priority => 'Error',
+                Info     => Translatable('Name is missing!'),
+            };
         }
 
         if ( !$CustomerDashboardInfoTileData->{Content} ) {
@@ -148,12 +153,35 @@ sub Run {
             # add server error class
             $Error{ContentServerError} = 'ServerError';
 
+            # add notification
+            push @NotifyData, {
+                Priority => 'Error',
+                Info     => Translatable('Content is missing!'),
+            };
         }
 
         if ( !$CustomerDashboardInfoTileData->{ValidID} ) {
 
             # add server error class
             $Error{ValidIDServerError} = 'ServerError';
+
+            # add notification
+            push @NotifyData, {
+                Priority => 'Error',
+                Info     => Translatable('ValidID is missing!'),
+            };
+        }
+
+        if ( !$CustomerDashboardInfoTileData->{Groups} && $Self->{LightAdmin} ) {
+
+            # add server error class
+            $Error{GroupsServerError} = 'ServerError';
+
+            # add notification
+            push @NotifyData, {
+                Priority => 'Error',
+                Info     => Translatable('Group is missing!'),
+            };
         }
 
         # if there is an error return to edit screen
@@ -181,7 +209,7 @@ sub Run {
         # show error if can't create
         if ( !$ID ) {
             return $LayoutObject->ErrorScreen(
-                Message => Translatable('There was an error creating the System Maintenance'),
+                Message => Translatable('There was an error creating the info tile entry'),
             );
         }
 
@@ -242,7 +270,7 @@ sub Run {
 
             # try to convert to TimeStamp
             my $DateTimeObject;
-            if ( $CustomerDashboardInfoTileData->{$Key . 'Used'} ) {
+            if ( $CustomerDashboardInfoTileData->{ $Key . 'Used' } ) {
                 $DateTimeObject = $Kernel::OM->Create(
                     'Kernel::System::DateTime',
                     ObjectParams => {
@@ -269,7 +297,7 @@ sub Run {
             # add notification
             push @NotifyData, {
                 Priority => 'Notice',
-                Info     => Translatable('Customer Dashboard Info was added successfully!'),
+                Info     => Translatable('Info tile entry was added successfully!'),
             };
         }
 
@@ -278,7 +306,7 @@ sub Run {
             # add notification
             push @NotifyData, {
                 Priority => 'Notice',
-                Info     => Translatable('Customer Dashboard Info was updated successfully!'),
+                Info     => Translatable('Info tile entry was updated successfully!'),
             };
         }
 
@@ -372,6 +400,12 @@ sub Run {
             $Error{ValidIDServerError} = 'ServerError';
         }
 
+        if ( !$CustomerDashboardInfoTileData->{Groups} && $Self->{LightAdmin} ) {
+
+            # add server error class
+            $Error{GroupsServerError} = 'ServerError';
+        }
+
         # if there is an error return to edit screen
         if ( IsHashRefWithData( \%Error ) ) {
 
@@ -402,7 +436,7 @@ sub Run {
         # show error if can't create
         if ( !$UpdateResult ) {
             return $LayoutObject->ErrorScreen(
-                Message => Translatable('There was an error updating the Customer Dashboard Info Tile'),
+                Message => Translatable('There was an error updating the info tile entry'),
             );
         }
 
@@ -445,7 +479,7 @@ sub Run {
         if ( !$Delete ) {
             return $LayoutObject->ErrorScreen(
                 Message => $LayoutObject->{LanguageObject}->Translate(
-                    'Was not possible to delete the CustomerDashboardInfoTile entry: %s!',
+                    'It was not possible to delete the info tile entry: %s!',
                     $ID
                 ),
             );
@@ -463,7 +497,20 @@ sub Run {
             UserID => $Self->{UserID},
         );
 
-        if ( !%{$CustomerDashboardInfoTileList} ) {
+        # check permissions on each tile
+        my %InfoTileList;
+        for my $EntryID ( keys %{$CustomerDashboardInfoTileList} ) {
+            my $Access = $CustomerDashboardInfoTileObject->InfoTilePermission(
+                Type   => 'rw',
+                ID     => $EntryID,
+                UserID => $Self->{UserID},
+            );
+            if ($Access) {
+                $InfoTileList{$EntryID} = $CustomerDashboardInfoTileList->{$EntryID};
+            }
+        }
+
+        if ( !%InfoTileList ) {
 
             # no data found block
             $LayoutObject->Block(
@@ -473,7 +520,7 @@ sub Run {
         else {
 
             # sort items; sorting priorities: start date, changed date, created date
-            my @Tiles       = values( %{$CustomerDashboardInfoTileList} );
+            my @Tiles       = values(%InfoTileList);
             my @TilesSorted = sort _ByDates @Tiles;
 
             for my $CustomerDashboardInfoTile (@TilesSorted) {
@@ -527,12 +574,12 @@ sub Run {
 
         if ( ( $ParamObject->GetParam( Param => 'Notification' ) || '' ) eq 'Update' ) {
             $Output .= $LayoutObject->Notify(
-                Info => Translatable('Customer Dashboard Info Tile was updated successfully!')
+                Info => Translatable('Info tile entry was updated successfully!')
             );
         }
         elsif ( ( $ParamObject->GetParam( Param => 'Notification' ) || '' ) eq 'Add' ) {
             $Output .= $LayoutObject->Notify(
-                Info => Translatable('Customer Dashboard Info Tile was added successfully!')
+                Info => Translatable('Info tile entry was added successfully!')
             );
         }
 
@@ -658,7 +705,7 @@ sub _ShowEdit {
         YearPeriodFuture  => 1,
         StartDateClass    => $Param{StartDateInvalid} || ' ',
         StartDateOptional => 1,
-        StartDateUsed     => $Param{StartDateUsed} || 0,
+        StartDateUsed     => $CustomerDashboardInfoTileData->{StartDateUsed} || 0,
     );
 
     # stop date info
@@ -671,14 +718,14 @@ sub _ShowEdit {
         YearPeriodFuture => 1,
         StopDateClass    => $Param{StopDateInvalid} || ' ',
         StopDateOptional => 1,
-        StopDateUsed     => $Param{StopDateUsed} || 0,
+        StopDateUsed     => $CustomerDashboardInfoTileData->{StopDateUsed} || 0,
     );
 
     # group selection
     my %GroupList;
     if ( $Self->{LightAdmin} ) {
         %GroupList = $GroupObject->PermissionUserGroupGet(
-            UserID => $Param{UserID},
+            UserID => $Self->{UserID},
             Type   => 'rw',
         );
         $Param{GroupSelectionMandatory} = 'Mandatory';

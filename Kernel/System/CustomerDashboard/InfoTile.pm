@@ -79,7 +79,7 @@ add a new infotile entry
 sub InfoTileAdd {
     my ( $Self, %Param ) = @_;
 
-    for my $Needed (qw(UserID Name Content Groups)) {
+    for my $Needed (qw(UserID Name Content )) {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
@@ -580,12 +580,14 @@ sub InfoTilePermission {
         }
     }
 
-    if ( !%GroupList ) {
+    if ( !$InfoTile->{Groups} ) {
         return 0;
     }
 
-    for my $GroupID ( keys %{ $InfoTile->{Groups} } ) {
-        if ( $GroupList{$GroupID} ) {
+    my @InfoTileGroups = split( ',', $InfoTile->{Groups} );
+
+    for my $GroupID (@InfoTileGroups) {
+        if ( !$GroupList{$GroupID} ) {
             return 0;
         }
     }

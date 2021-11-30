@@ -77,9 +77,6 @@ sub Run {
                     );
                 }
 
-                print STDERR "CustomerDashboardContent.pm, L.80: " . $CurrentDate->ToString() . "\n";
-                print STDERR "CustomerDashboardContent.pm, L.81: " . $StopDate->ToString() . "\n";
-
                 if (
                     ( ( $StartDate && $CurrentDate->Compare( DateTimeObject => $StartDate ) > 0 ) || !$StartDate )
                     && ( ( $StopDate && $StopDate->Compare( DateTimeObject => $CurrentDate ) > 0 ) || !$StopDate )

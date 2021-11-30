@@ -62,16 +62,14 @@
                         <label>[% Translate("Start date") | html %]:</label>
                         <div class="Field">
                             [% Data.StartDateString %]
-                            <div id="StartDateDayServerError" class="TooltipErrorMessage"><p>[% Translate("Date invalid!") | html %]</p></div>
-                            <div id="StartDateHourServerError" class="TooltipErrorMessage"><p>[% Translate("Date invalid!") | html %]</p></div>
+                            <div id="StartDateServerError" class="TooltipErrorMessage"><p>[% Translate("Date invalid!") | html %]</p></div>
                         </div>
                         <div class="Clear"></div>
 
                         <label>[% Translate("Stop date") | html %]:</label>
                         <div class="Field">
                             [% Data.StopDateString %]
-                            <div id="StopDateDayServerError" class="TooltipErrorMessage"><p>[% Translate("Date invalid!") | html %]</p></div>
-                            <div id="StopDateHourServerError" class="TooltipErrorMessage"><p>[% Translate("Date invalid!") | html %]</p></div>
+                            <div id="StopDateServerError" class="TooltipErrorMessage"><p>[% Translate("Date invalid!") | html %]</p></div>
                         </div>
                         <div class="Clear"></div>
 
@@ -94,10 +92,10 @@
                             <label class="[% Data.GroupSelectionMandatory %]" for="GroupSelection">[% IF Data.GroupSelectionMandatory %]<span class="Marker">*</span> [% END %][% Translate("Group Selection") | html %]:</label>
                             <div class="Field">
                                 [% Data.GroupSelection %]
-                            <div id="GroupSelectionError" class="TooltipErrorMessage">
+                            <div id="GroupsError" class="TooltipErrorMessage">
                                 <p>[% Translate("This field is required.") | html %]</p>
                             </div>
-                            <div id="GroupSelectionServerError" class="TooltipErrorMessage">
+                            <div id="GroupsServerError" class="TooltipErrorMessage">
                                 <p>[% Translate("This field is required.") | html %]</p>
                             </div>
                         </div>
