@@ -38,7 +38,7 @@
             <div class="Content">
                 <ul class="ActionList">
                     <li>
-                        <a href="[% Env("Baselink") %]Action=[% Env("Action") %];Subaction=CustomerDashboardInfoTileNew" class="CallForAction Fullsize Center Create"><span><i class="fa fa-plus-square"></i>[% Translate("Create new Info Tile Entry") | html %]</span></a>
+                        <a href="[% Env("Baselink") %]Action=[% Env("Action") %];Subaction=CustomerDashboardInfoTileNew" class="CallForAction Fullsize Center Create"><span><i class="fa fa-plus-square"></i>[% Translate("Create new info tile entry") | html %]</span></a>
                     </li>
 
                 </ul>
@@ -46,7 +46,7 @@
         </div>
         <div class="WidgetSimple">
             <div class="Header">
-                <h2><label for="FilterInfoTileEntries">[% Translate("Filter for Info Tile Entries") | html %]</label></h2>
+                <h2><label for="FilterInfoTileEntries">[% Translate("Filter for info tile entries") | html %]</label></h2>
             </div>
             <div class="Content">
                 <input type="text" id="FilterInfoTileEntries" class="FilterBox" placeholder="[% Translate("Just start typing to filter...") | html %]" name="FilterInfoTileEntries" value="" title="[% Translate("Filter for info tile entries") | html %]">

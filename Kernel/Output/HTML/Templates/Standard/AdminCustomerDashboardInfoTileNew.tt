@@ -15,7 +15,7 @@
 # --
 
 <div class="MainBox ARIARoleMain LayoutFixedSidebar SidebarFirst">
-    <h1 class="InvisibleText">[% Translate("Create new customer dashboard info tile entry") | html %]</h1>
+    <h1 class="InvisibleText">[% Translate("Create new info tile entry") | html %]</h1>
 
     [% BreadcrumbPath = [
             {
@@ -49,7 +49,7 @@
     <div class="ContentColumn">
         <div class="WidgetSimple">
             <div class="Header">
-                <h2>[% Translate("Schedule New System Maintenance") | html %]</h2>
+                <h2>[% Translate("Create new info tile entry") | html %]</h2>
             </div>
             <div class="Content">
                 <form action="[% Env("CGIHandle") %]" method="post" class="Validate PreventMultipleSubmits">

@@ -26,7 +26,11 @@ sub Data {
 
     # own translations
     $Self->{Translation}->{'Customer Dashboard Info Tile'} = 'Info-Kachel Kunden-Dashboard';
-    $Self->{Translation}->{'Unlock'}                       = 'Lulu';
+    $Self->{Translation}->{'Create new info tile entry'} = 'Neuen Info-Kachel-Eintrag erstellen';
+    $Self->{Translation}->{'Filter for info tile entries'} = 'Filter für Info-Kachel-Einträge';
+    $Self->{Translation}->{'Create a new entry to be displayed on the info tile on the customer dashboard.'} = 'Erstellen Sie einen neuen Info-Kachel-Eintrag für die Info-Kachel auf dem Kunden-Dashboard.';
+    $Self->{Translation}->{'Customer Dashboard Info Tile Management'} = 'Kunden-Dashboard-Info-Kachel-Verwaltung';
+    $Self->{Translation}->{'Edit customer dashboard info tile entry'} = 'Info-Kachel-Eintrag bearbeiten';
 
     # or an other syntax would be
     #    $Self->{Translation} = {
