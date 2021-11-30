@@ -241,12 +241,15 @@ sub Run {
         for my $Key (qw(StartDate StopDate)) {
 
             # try to convert to TimeStamp
-            my $DateTimeObject = $Kernel::OM->Create(
-                'Kernel::System::DateTime',
-                ObjectParams => {
-                    String => $CustomerDashboardInfoTileData->{$Key},
-                }
-            );
+            my $DateTimeObject;
+            if ( $CustomerDashboardInfoTileData->{$Key . 'Used'} ) {
+                $DateTimeObject = $Kernel::OM->Create(
+                    'Kernel::System::DateTime',
+                    ObjectParams => {
+                        String => $CustomerDashboardInfoTileData->{$Key},
+                    }
+                );
+            }
             $CustomerDashboardInfoTileData->{ $Key . 'TimeStamp' } =
                 $DateTimeObject ? $DateTimeObject->ToString() : undef;
         }
