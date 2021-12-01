@@ -48,6 +48,7 @@ sub Data {
     $Self->{Translation}->{'There was an error updating the info tile entry'}     = 'Beim Bearbeiten des Info-Kachel-Eintrags ist ein Problem aufgetreten';
     $Self->{Translation}->{'No Customer Dashboard Info Tile ID'}                  = 'Es konnte kein Info-Kachel-Eintrag mit folgender ID gefunden werden: ';
     $Self->{Translation}->{'It was not possible to delete the info tile entry'}   = 'Der Info-Kachel-Eintrag konnte nicht geloescht werden';
+    $Self->{Translation}->{'Manage Customer Dashboard Info Tile Entries'}         = 'Verwaltung der Info-Kachel-Eintraege fuer das Kunden-Dashboard';
 
     # or an other syntax would be
     #    $Self->{Translation} = {

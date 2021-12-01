@@ -521,7 +521,7 @@ sub Run {
 
             # sort items; sorting priorities: start date, changed date, created date
             my @Tiles       = values(%InfoTileList);
-            my @TilesSorted = sort _ByDates @Tiles;
+            my @TilesSorted = sort { $b->{StartDate} cmp $a->{StartDate} || $b->{Changed} cmp $a->{Changed} || $b->{Created} cmp $a->{Created} } @Tiles;
 
             for my $CustomerDashboardInfoTile (@TilesSorted) {
 
@@ -589,80 +589,6 @@ sub Run {
         $Output .= $LayoutObject->Footer();
         return $Output;
     }
-
-}
-
-sub _ByDates {
-
-    # get date objects for $a
-    my $AStartDate = '';
-    if ( $a->{StartDate} ) {
-        $AStartDate = $Kernel::OM->Create(
-            'Kernel::System::DateTime',
-            ObjectParams => {
-                String => $a->{StartDate}
-            }
-        );
-    }
-    my $AChangedDate = $Kernel::OM->Create(
-        'Kernel::System::DateTime',
-        ObjectParams => {
-            String => $a->{Changed}
-        }
-    );
-    my $ACreatedDate = $Kernel::OM->Create(
-        'Kernel::System::DateTime',
-        ObjectParams => {
-            String => $a->{Created}
-        }
-    );
-
-    # get date objects for $b
-    my $BStartDate = '';
-    if ( $b->{StartDate} ) {
-        $BStartDate = $Kernel::OM->Create(
-            'Kernel::System::DateTime',
-            ObjectParams => {
-                String => $b->{StartDate}
-            }
-        );
-    }
-    my $BChangedDate = $Kernel::OM->Create(
-        'Kernel::System::DateTime',
-        ObjectParams => {
-            String => $b->{Changed}
-        }
-    );
-    my $BCreatedDate = $Kernel::OM->Create(
-        'Kernel::System::DateTime',
-        ObjectParams => {
-            String => $b->{Created}
-        }
-    );
-
-    if ( $BStartDate && $AStartDate ) {
-        if ( $BStartDate->Compare( DateTimeObject => $AStartDate ) == 0 ) {
-            if ( $BChangedDate->Compare( DateTimeObject => $AChangedDate ) == 0 ) {
-                return $BCreatedDate->Compare( DateTimeObject => $ACreatedDate );
-            }
-            else {
-                return $BChangedDate->Compare( DateTimeObject => $AChangedDate );
-            }
-        }
-        else {
-            return $BStartDate->Compare( DateTimeObject => $AStartDate );
-        }
-    }
-    else {
-        if ( $BChangedDate->Compare( DateTimeObject => $AChangedDate ) == 0 ) {
-            return $BCreatedDate->Compare( DateTimeObject => $ACreatedDate );
-        }
-        else {
-            return $BChangedDate->Compare( DateTimeObject => $AChangedDate );
-        }
-    }
-
-    return 0;
 
 }
 

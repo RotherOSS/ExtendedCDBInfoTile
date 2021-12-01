@@ -90,9 +90,9 @@
                             <td><a class="AsBlock" href="[% Env("Baselink") %]Action=AdminCustomerDashboardInfoTile;Subaction=CustomerDashboardInfoTileEdit;ID=[% Data.ID | uri%]">[% Data.Name | truncate(80) | html %]</a></td>
                             <td>[% Data.Content | truncate(80) | html %]</td>
                             <td class="Center">
-                                <a class="TrashCan CustomerDashboardInfoInfoTileDelete" href="[% Env("Baselink") %]Action=[% Env("Action") %];Subaction=Delete;ID=[% Data.ID | uri %];[% Env("ChallengeTokenParam") | html %]" title="[% Translate("Delete Info Tile Entry") | html %]">
+                                <a class="TrashCan CustomerDashboardInfoInfoTileDelete" href="[% Env("Baselink") %]Action=[% Env("Action") %];Subaction=Delete;ID=[% Data.ID | uri %];[% Env("ChallengeTokenParam") | html %]" title="[% Translate("Delete info tile entry") | html %]">
                                     <i class="fa fa-trash-o"></i>
-                                    <span class="InvisibeText">[% Translate("Delete Info Tile Entry") | html %]</span>
+                                    <span class="InvisibeText">[% Translate("Delete info tile entry") | html %]</span>
                                 </a>
                             </td>
                         </tr>
