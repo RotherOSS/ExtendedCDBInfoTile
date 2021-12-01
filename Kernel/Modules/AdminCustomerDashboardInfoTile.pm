@@ -197,13 +197,15 @@ sub Run {
         }
 
         my $ID = $CustomerDashboardInfoTileObject->InfoTileAdd(
-            StartDate => $CustomerDashboardInfoTileData->{StartDate},
-            StopDate  => $CustomerDashboardInfoTileData->{StopDate},
-            Name      => $CustomerDashboardInfoTileData->{Name},
-            Content   => $CustomerDashboardInfoTileData->{Content},
-            Groups    => $CustomerDashboardInfoTileData->{Groups},
-            ValidID   => $CustomerDashboardInfoTileData->{ValidID},
-            UserID    => $Self->{UserID},
+            StartDate     => $CustomerDashboardInfoTileData->{StartDate},
+            StartDateUsed => $CustomerDashboardInfoTileData->{StartDateUsed},
+            StopDate      => $CustomerDashboardInfoTileData->{StopDate},
+            StopDateUsed  => $CustomerDashboardInfoTileData->{StopDateUsed},
+            Name          => $CustomerDashboardInfoTileData->{Name},
+            Content       => $CustomerDashboardInfoTileData->{Content},
+            Groups        => $CustomerDashboardInfoTileData->{Groups},
+            ValidID       => $CustomerDashboardInfoTileData->{ValidID},
+            UserID        => $Self->{UserID},
         );
 
         # show error if can't create

@@ -141,8 +141,14 @@ sub InfoTileAdd {
         StartDate => [
             { Content => $StartDateString },
         ],
+        StartDateUsed => [
+            { Content => $Param{StartDateUsed} },
+        ],
         StopDate => [
             { Content => $StopDateString },
+        ],
+        StopDateUsed => [
+            { Content => $Param{StopDateUsed} }
         ],
         Groups => [
             { Content => $Param{Groups} }
