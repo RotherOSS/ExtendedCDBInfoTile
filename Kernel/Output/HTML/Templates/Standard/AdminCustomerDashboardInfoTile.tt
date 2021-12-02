@@ -75,20 +75,20 @@
                 <table class="DataTable" id="InfoTileEntries">
                     <thead>
                         <tr>
-                            <th>[% Translate("Start date") | html %]</th>
-                            <th>[% Translate("Stop date") | html %]</th>
                             <th>[% Translate("Name") | html %]</th>
                             <th>[% Translate("Valid") | html %]</th>
+                            <th>[% Translate("Start date") | html %]</th>
+                            <th>[% Translate("Stop date") | html %]</th>
                             <th class="Center">[% Translate("Delete") | html %]</th>
                         </tr>
                     </thead>
                     <tbody>
 [% RenderBlockStart("ViewRow") %]
                         <tr [% IF Data.ValidID != "valid"%]class="Invalid"[% END %]>
-                            <td>[% Data.StartDateTimeStamp | html %]</td>
-                            <td>[% Data.StopDateTimeStamp | html %]</td>
                             <td><a class="AsBlock" href="[% Env("Baselink") %]Action=AdminCustomerDashboardInfoTile;Subaction=CustomerDashboardInfoTileEdit;ID=[% Data.ID | uri%]">[% Data.Name | truncate(80) | html %]</a></td>
                             <td>[% Data.ValidID | html %]</td>
+                            <td>[% Data.StartDateTimeStamp | html %]</td>
+                            <td>[% Data.StopDateTimeStamp | html %]</td>
                             <td class="Center">
                                 <a class="TrashCan CustomerDashboardInfoInfoTileDelete" href="[% Env("Baselink") %]Action=[% Env("Action") %];Subaction=Delete;ID=[% Data.ID | uri %];[% Env("ChallengeTokenParam") | html %]" title="[% Translate("Delete info tile entry") | html %]">
                                     <i class="fa fa-trash-o"></i>
