@@ -16,7 +16,7 @@
         <File Permission="660" Location="Kernel/Output/HTML/Templates/Standard/AdminCustomerDashboardInfoTileEdit.tt" />
         <File Permission="660" Location="Kernel/Output/HTML/Templates/Standard/AdminCustomerDashboardInfoTileNew.tt" />
         <File Permission="660" Location="Kernel/Output/HTML/Templates/Standard/AdminCustomerDashboardInfoTile.tt" />
-        <File Permission="660" Location="Kernel/Output/HTML/Templates/Standard/Dashboard/TileInfoEntries.tt" />
+        <File Permission="660" Location="Kernel/Output/HTML/Templates/Standard/Dashboard/TileExtendedCustomerInfo.tt" />
         <File Permission="660" Location="Kernel/System/CustomerDashboard/InfoTile.pm" />
         <File Permission="660" Location="var/httpd/htdocs/js/Core.Agent.Admin.CustomerDashboardInfoTile.js" />
         <File Permission="660" Location="var/httpd/htdocs/js/ExtendedCDBInfo.Tile.js" />
