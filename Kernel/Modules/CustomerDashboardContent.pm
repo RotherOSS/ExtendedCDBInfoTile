@@ -83,7 +83,11 @@ sub Run {
                     && $InfoTile{ValidID} eq '1'
                     )
                 {
-                    $InfoTileContent .= $InfoTile{Content} . "<br>";
+                    if ( $InfoTileContent ) {
+                        $InfoTileContent .= '<br><br>';
+                    }
+
+                    $InfoTileContent .= $InfoTile{Content};
                 }
             }
         }
