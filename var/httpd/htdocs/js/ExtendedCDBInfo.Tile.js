@@ -30,26 +30,33 @@ ExtendedCDBInfo.Tile = ExtendedCDBInfo.Tile || {};
 
     /**
      * @private
-     * @name CalculateHeight
+     * @name CalculateSize
      * @memberof ExtendedCDBInfo.Tile
      * @function
      * @param {DOMObject} Iframe - DOM representation of an iframe
      * @description
      *      Sets the size of the iframe to the size of its inner html.
      */
-    function CalculateHeight(Iframe){
+    function CalculateSize(Iframe){
         Iframe = isJQueryObject(Iframe) ? Iframe.get(0) : Iframe;
 
         setTimeout(function () {
             var $IframeContent = $(Iframe.contentDocument || Iframe.contentWindow.document),
                 NewHeight = $IframeContent.height();
+                NewWidth  = $IframeContent.width();
+
             if (!NewHeight || isNaN(NewHeight)) {
                 NewHeight = 100;
             }
+            if (!NewWidth || isNaN(NewWidth)) {
+                NewWidth = 100;
+            }
 
-            NewHeight = parseInt(NewHeight, 10) + 12;
+            NewHeight = parseInt(NewHeight, 10) + 1;
             $(Iframe).height(NewHeight + 'px');
-        }, 1500);
+            NewWidth = parseInt(NewWidth, 10) + 1;
+            $(Iframe).height(NewWidth + 'px');
+        }, 800);
     }
 
     /**

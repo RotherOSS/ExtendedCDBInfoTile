@@ -14,14 +14,15 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
 /* ExtendedInfoTile */
-.oooTile_InfoTile {
+.oooTile_InfoTile > .Outer {
     padding: 16px 24px;
     width: calc( 100% - 48px );
-    height: fit-content;
+    height: auto;
     max-height: calc( 100% - 32px );
+    border-radius: 20px;
 }
 
-.oooTile_InfoTile > div {
+.oooTile_InfoTile .Inner {
     width: 100%;
     height: auto;
     max-height: 100%;
