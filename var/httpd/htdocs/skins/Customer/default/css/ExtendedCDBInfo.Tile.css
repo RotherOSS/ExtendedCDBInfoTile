@@ -22,13 +22,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 }
 
 .oooTile_InfoTile > div {
-    padding: 16px 24px;
     width: 100%;
     height: auto;
     max-height: 100%;
     overflow: auto;
-}
-
-.oooTile_InfoTile {
-    width: 100%;
 }
