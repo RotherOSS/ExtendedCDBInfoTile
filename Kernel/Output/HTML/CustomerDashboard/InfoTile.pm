@@ -50,7 +50,7 @@ sub Run {
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
     my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
     my $Content      = $Kernel::OM->Get('Kernel::Output::HTML::Layout')->Output(
-        TemplateFile => 'Dashboard/TileInfoEntries',
+        TemplateFile => 'Dashboard/TileExtendedCustomerInfo',
         Data         => {
             TileID => $Param{TileID},
             %{ $Param{Config} },
