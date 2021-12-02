@@ -122,4 +122,22 @@
             </Hash>
         </Value>
     </Setting>
+    <Setting Name="Loader::Module::CustomerDashboard###009-ExtendedCDBInfo" Required="0" Valid="1">
+        <Description Translatable="1">Loader module registration for the customer interface.</Description>
+        <Navigation>Frontend::Customer::ModuleRegistration::Loader</Navigation>
+        <Value>
+            <Hash>
+                <Item Key="CSS">
+                    <Array>
+                        <Item>ExtendedCDBInfo.Tile.css</Item>
+                    </Array>
+                </Item>
+                <Item Key="JavaScript">
+                    <Array>
+                        <Item>ExtendedCDBInfo.Tile.js</Item>
+                    </Array>
+                </Item>
+            </Hash>
+        </Value>
+    </Setting>
 </otobo_config>
