@@ -42,7 +42,7 @@ ExtendedCDBInfo.Tile = ExtendedCDBInfo.Tile || {};
 
         setTimeout(function () {
             var $IframeContent = $(Iframe.contentDocument || Iframe.contentWindow.document),
-                NewHeight = $IframeContent.height();
+                NewHeight = $IframeContent.height(),
                 NewWidth  = $IframeContent.width();
 
             if (!NewHeight || isNaN(NewHeight)) {
@@ -71,7 +71,7 @@ ExtendedCDBInfo.Tile = ExtendedCDBInfo.Tile || {};
      */
     function ResizeIframe(Iframe, Callback){
         Iframe = isJQueryObject(Iframe) ? Iframe.get(0) : Iframe;
-        CalculateHeight(Iframe);
+        CalculateSize(Iframe);
         if ($.isFunction(Callback)) {
             Callback();
         }
