@@ -662,7 +662,8 @@ sub DocumentComplete {
         || 'font-size: 12px; font-family:Courier,monospace,fixed;';
 
 # Rother OSS / ExtendedCDBInfoTile
-    my $CustomerCss = $Kernel::OM->Get('Kernel::Config')->Get('CustomerFrontend::RichText::DefaultCSS');
+    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+    my $CustomerCss = $ConfigObject->Get('CustomerFrontend::RichText::DefaultCSS');
     if ( $Param{CustomerInterface} && $CustomerCss ) {
         $Css = $CustomerCss;
     }
@@ -676,6 +677,12 @@ sub DocumentComplete {
     my $Body = '<!DOCTYPE html><html><head>';
     $Body
         .= '<meta http-equiv="Content-Type" content="text/html; charset=' . $Param{Charset} . '"/>';
+# Rother OSS / ExtendedCDBInfoTile
+    if ( $Param{CustomerInterface} && $CustomerCss ) {
+        # include quicksand
+        $Body .= '<link rel="stylesheet" type="text/css" href="' . $ConfigObject->Get('Frontend::WebPath') . 'common/css/quicksand.css">';
+    }
+# EO ExtendedCDBInfoTile
     $Body .= '</head><body style="' . $Css . '">' . $Param{String} . '</body></html>';
     return $Body;
 }
