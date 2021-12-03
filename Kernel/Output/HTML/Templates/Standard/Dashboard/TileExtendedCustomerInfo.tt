@@ -14,8 +14,8 @@
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 # --
 <div id="oooTile[% Data.TileID | html %]" class="oooTile oooTile_InfoTile">
-    <div class='Outer' style="background-color: [% Data.BackgroundColor | html %]">
-        <div class='Inner'>
+    <div class='OuterFrame' style="background-color: [% Data.BackgroundColor | html %]">
+        <div class='OverflowCtl'>
             <iframe src="[% Env('BaseLink') %]?Action=CustomerDashboardContent;Subaction=InfoTile"></iframe>
         </div>
     </div>
