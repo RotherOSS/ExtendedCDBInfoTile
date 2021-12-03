@@ -14,22 +14,20 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
 /* ExtendedInfoTile */
-.oooTile_InfoTile > .OuterFrame {
+.oooTile_InfoTile {
     padding: 16px 24px;
     width: calc( 100% - 48px );
-    height: auto;
-    max-height: calc( 100% - 32px );
-    border-radius: 20px;
+    height: calc( 100% - 32px );
     display: grid;
-    grid-template-columns: 1fr;
-    grid-template-rows: 1fr;
+    grid-template-rows: 2fr auto 1fr;
 }
 
-.oooTile_InfoTile .OverflowCtl {
+.oooTile_InfoTile > .OverflowCtl {
     width: 100%;
     height: auto;
     max-height: 100%;
-    overflow: auto;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
 .oooTile_InfoTile iframe {

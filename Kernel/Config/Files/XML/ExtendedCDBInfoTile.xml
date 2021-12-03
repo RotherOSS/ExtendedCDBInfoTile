@@ -140,4 +140,11 @@
             </Hash>
         </Value>
     </Setting>
+    <Setting Name="CustomerFrontend::RichText::DefaultCSS" Required="1" Valid="1">
+        <Description Translatable="1">Defines the default CSS used in rich text editors.</Description>
+        <Navigation>Frontend::Base</Navigation>
+        <Value>
+            <Item ValueType="String" ValueRegex="">font-family:'Quicksand', sans-serif; font-size: 14px; line-height: 1.5; color: #00023c;</Item>
+        </Value>
+    </Setting>
 </otobo_config>
