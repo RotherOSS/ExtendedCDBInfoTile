@@ -55,7 +55,7 @@ ExtendedCDBInfo.Tile = ExtendedCDBInfo.Tile || {};
             NewHeight = parseInt(NewHeight, 10) + 1;
             $(Iframe).height(NewHeight + 'px');
             NewWidth = parseInt(NewWidth, 10) + 1;
-            $(Iframe).height(NewWidth + 'px');
+            $(Iframe).width(NewWidth + 'px');
         }, 800);
     }
 
