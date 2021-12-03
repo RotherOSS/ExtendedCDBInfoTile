@@ -42,7 +42,7 @@ ExtendedCDBInfo.Tile = ExtendedCDBInfo.Tile || {};
 
         setTimeout(function () {
             var $IframeContent = $(Iframe.contentDocument || Iframe.contentWindow.document),
-                NewHeight = $IframeContent.height(),
+                NewHeight = $IframeContent.height();
 
             if (!NewHeight || isNaN(NewHeight)) {
                 NewHeight = 100;
