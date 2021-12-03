@@ -681,6 +681,7 @@ sub DocumentComplete {
     if ( $Param{CustomerInterface} && $CustomerCss ) {
         # include quicksand
         $Body .= '<link rel="stylesheet" type="text/css" href="' . $ConfigObject->Get('Frontend::WebPath') . 'common/css/quicksand.css">';
+        $Body .= '<link rel="stylesheet" type="text/css" href="' . $ConfigObject->Get('Frontend::WebPath') . 'skins/Customer/default/css/Core.Default.css">';
     }
 # EO ExtendedCDBInfoTile
     $Body .= '</head><body style="' . $Css . '">' . $Param{String} . '</body></html>';
