@@ -31,3 +31,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
     max-height: 100%;
     overflow: auto;
 }
+
+.oooTile_InfoTile iframe {
+    width: 100%;
+}
