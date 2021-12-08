@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <otobo_config version="2.0" init="Framework">
      <Setting Name="CustomerDashboard::Tiles###InfoTile-01" Required="0" Valid="0">
-        <Description Translatable="1">Tile registration for the CustomerDashboard. Module is required.</Description>
+        <Description Translatable="1">Tile registration for the CustomerDashboard. Module is required. Optionally, an order for items can be set. The order must have the name of the item as key and the desired position as integer value.</Description>
         <Navigation>Frontend::Customer::View::Dashboard::Tiles</Navigation>
         <Value>
             <Hash>
@@ -100,7 +100,7 @@
         </Value>
     </Setting>
     <Setting Name="Frontend::NavigationModule###AdminCustomerDashboardInfoTile" Required="0" Valid="1">
-        <Description Translatable="1">Admin area navigation for the agent interface. Optionally, an order for items can be set in the System Configuration in CustomerDashboard::Tiles###InfoTile-01. The order must have the name of the item as key and the desired position as integer value.</Description>
+        <Description Translatable="1">Admin area navigation for the agent interface.</Description>
         <Navigation>Frontend::Admin::ModuleRegistration::AdminOverview</Navigation>
         <Value>
             <Hash>

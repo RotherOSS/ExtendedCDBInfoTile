@@ -44,54 +44,15 @@ sub Run {
 
     my $LayoutObject                    = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
     my $ParamObject                     = $Kernel::OM->Get('Kernel::System::Web::Request');
-    my $SessionObject                   = $Kernel::OM->Get('Kernel::System::AuthSession');
     my $CustomerDashboardInfoTileObject = $Kernel::OM->Get('Kernel::System::CustomerDashboard::InfoTile');
 
-    my $ID            = $ParamObject->GetParam( Param => 'ID' )            || '';
-    my $WantSessionID = $ParamObject->GetParam( Param => 'WantSessionID' ) || '';
-
+    my $ID                = $ParamObject->GetParam( Param => 'ID' ) || '';
     my $SessionVisibility = 'Collapsed';
-
-    # ------------------------------------------------------------ #
-    # kill session id
-    # ------------------------------------------------------------ #
-    if ( $Self->{Subaction} eq 'Kill' ) {
-
-        # challenge token check for write action
-        $LayoutObject->ChallengeTokenCheck();
-
-        $SessionObject->RemoveSessionID( SessionID => $WantSessionID );
-        return $LayoutObject->Redirect(
-            OP =>
-                "Action=AdminCustomerDashboardInfoTile;Subaction=CustomerDashboardInfoTileEdit;ID=$ID;Kill=1"
-        );
-    }
-
-    # ------------------------------------------------------------ #
-    # kill all session ids
-    # ------------------------------------------------------------ #
-    elsif ( $Self->{Subaction} eq 'KillAll' ) {
-
-        # challenge token check for write action
-        $LayoutObject->ChallengeTokenCheck();
-
-        my @Sessions = $SessionObject->GetAllSessionIDs();
-        SESSIONS:
-        for my $Session (@Sessions) {
-            next SESSIONS if $Session eq $WantSessionID;
-            $SessionObject->RemoveSessionID( SessionID => $Session );
-        }
-
-        return $LayoutObject->Redirect(
-            OP =>
-                "Action=AdminCustomerDashboardInfoTile;Subaction=CustomerDashboardInfoTileEdit;ID=$ID;KillAll=1"
-        );
-    }
 
     # ------------------------------------------------------------ #
     # CustomerDashboardInfoTileNew
     # ------------------------------------------------------------ #
-    elsif ( $Self->{Subaction} eq 'CustomerDashboardInfoTileNew' ) {
+    if ( $Self->{Subaction} eq 'CustomerDashboardInfoTileNew' ) {
 
         return $Self->_ShowEdit(
             %Param,
@@ -652,7 +613,7 @@ sub _ShowEdit {
     # group selection
     my %GroupList;
     if ( $Self->{LightAdmin} ) {
-        %GroupList = $GroupObject->PermissionUserGroupGet(
+        %GroupList = $GroupObject->PermissionUserGet(
             UserID => $Self->{UserID},
             Type   => 'rw',
         );
