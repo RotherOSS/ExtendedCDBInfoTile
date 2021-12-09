@@ -48,9 +48,9 @@ ExtendedCDBInfo.Tile = ExtendedCDBInfo.Tile || {};
                 NewHeight = 100;
             }
 
-            NewHeight = parseInt(NewHeight, 10) + 1;
+            NewHeight = parseInt(NewHeight, 10) + 10;
             $(Iframe).height(NewHeight + 'px');
-        }, 800);
+        }, 1000);
     }
 
     /**
