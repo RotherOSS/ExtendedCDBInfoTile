@@ -571,7 +571,7 @@ sub InfoTilePermission {
     # get needed objects
     my $GroupObject = $Kernel::OM->Get('Kernel::System::Group');
 
-    my %GroupList = $GroupObject->PermissionUserGroupGet(
+    my %GroupList = $GroupObject->PermissionUserGet(
         UserID => $Param{UserID},
         Type   => $Param{Type},
     );
