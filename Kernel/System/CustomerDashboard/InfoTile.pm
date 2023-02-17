@@ -66,12 +66,13 @@ sub new {
 add a new infotile entry
 
     my $ID = $InfoTileObject->InfoTileAdd(
-        UserID      => $UserID,
-        StartDate   => $StartDate,
-        StopDate    => $StopDate,
-        Name     => $Name,
-        Content     => $Content,
-        Groups  => $Groups (optional when user is admin)
+        UserID         => $UserID,
+        StartDate      => $StartDate,
+        StopDate       => $StopDate,
+        Name           => $Name,
+        Content        => $Content,
+        MarqueeContent => $MarqueeContent,
+        Groups         => $Groups (optional when user is admin)
     );
 
 =cut
@@ -79,7 +80,7 @@ add a new infotile entry
 sub InfoTileAdd {
     my ( $Self, %Param ) = @_;
 
-    for my $Needed (qw(UserID Name Content )) {
+    for my $Needed (qw(UserID Name)) {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
@@ -137,6 +138,9 @@ sub InfoTileAdd {
         ],
         Content => [
             { Content => $Param{Content} },
+        ],
+        MarqueeContent => [
+            { Content => $Param{MarqueeContent} },
         ],
         StartDate => [
             { Content => $StartDateString },
@@ -249,7 +253,7 @@ sub InfoTileGet {
     # process all strings
     $InfoTile{ID} = $Param{ID};
     for my $Key (
-        qw(ID Name Content StartDate StartDateUsed StopDate StopDateUsed Created CreatedBy Changed ChangedBy ValidID Groups
+        qw(ID Name Content MarqueeContent StartDate StartDateUsed StopDate StopDateUsed Created CreatedBy Changed ChangedBy ValidID Groups
         )
         )
     {
@@ -358,6 +362,7 @@ update an existing infotile entry
         StopDate => $StopDate,
         Name => $Name,
         Content => $Content,
+        MarqueeContent => $MarqueeContent,
         Groups => $Groups (optional when user is admin)
     );
 
@@ -366,7 +371,7 @@ update an existing infotile entry
 sub InfoTileUpdate {
     my ( $Self, %Param ) = @_;
 
-    for my $Needed (qw(UserID ID Name Content)) {
+    for my $Needed (qw(UserID ID Name)) {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
@@ -433,6 +438,9 @@ sub InfoTileUpdate {
         ],
         Content => [
             { Content => $Param{Content} },
+        ],
+        MarqueeContent => [
+            { Content => $Param{MarqueeContent} },
         ],
         StartDate => [
             { Content => $StartDateString },

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <otobo_config version="2.0" init="Framework">
-     <Setting Name="CustomerDashboard::Tiles###InfoTile-01" Required="0" Valid="0">
+     <Setting Name="CustomerDashboard::Tiles###InfoTile-01" Required="0" Valid="1">
         <Description Translatable="1">Tile registration for the CustomerDashboard. Module is required. Optionally, an order for items can be set. The order must have the name of the item as key and the desired position as integer value.</Description>
         <Navigation>Frontend::Customer::View::Dashboard::Tiles</Navigation>
         <Value>
             <Hash>
-                <Item Key="Order">3</Item>
+                <Item Key="Order">4</Item>
                 <Item Key="Module">Kernel::Output::HTML::CustomerDashboard::InfoTile</Item>
                 <Item Key="Template">Dashboard/TileInfoEntries</Item>
                 <Item Key="Config">
@@ -122,29 +122,34 @@
             </Hash>
         </Value>
     </Setting>
-    <Setting Name="Loader::Module::CustomerDashboard###009-ExtendedCDBInfo" Required="0" Valid="1">
-        <Description Translatable="1">Loader module registration for the customer interface.</Description>
-        <Navigation>Frontend::Customer::ModuleRegistration::Loader</Navigation>
+    <Setting Name="Loader::Customer::CommonCSS###009-ExtendedCDBInfo" Required="1" Valid="1">
+        <Description Translatable="1">List of CSS files to always be loaded for the customer interface.</Description>
+        <Navigation>Frontend::Base::Loader</Navigation>
         <Value>
-            <Hash>
-                <Item Key="CSS">
-                    <Array>
-                        <Item>ExtendedCDBInfo.Tile.css</Item>
-                    </Array>
-                </Item>
-                <Item Key="JavaScript">
-                    <Array>
-                        <Item>ExtendedCDBInfo.Tile.js</Item>
-                    </Array>
-                </Item>
-            </Hash>
+            <Array>
+                <Item>ExtendedCDBInfo.Tile.css</Item>
+            </Array>
         </Value>
     </Setting>
-    <Setting Name="CustomerFrontend::RichText::DefaultCSS" Required="1" Valid="1">
-        <Description Translatable="1">Defines the default CSS used in rich text editors.</Description>
-        <Navigation>Frontend::Base</Navigation>
+    <Setting Name="Loader::Customer::CommonJS###009-ExtendedCDBInfo" Required="1" Valid="1">
+        <Description Translatable="1">List of JS files to always be loaded for the customer interface.</Description>
+        <Navigation>Frontend::Base::Loader</Navigation>
         <Value>
-            <Item ValueType="String" ValueRegex="">font-family:'Quicksand', sans-serif; font-size: 14px; line-height: 1.5; color: #00023c;</Item>
+            <Array>
+                <Item>ExtendedCDBInfo.Tile.js</Item>
+            </Array>
+        </Value>
+    </Setting>
+    <Setting Name="CustomerFrontend::NotifyModule###8-CustomerAnnouncement-Check" Required="1" Valid="1">
+        <Description Translatable="1">Defines the module to display a notification in the customer interface. UseMarquee options: 1/0. NotifyPriority options: Notice/Error/Success/Info.</Description>
+        <Navigation>Frontend::Customer::FrontendNotification</Navigation>
+        <Value>
+            <Hash>
+                <Item Key="Module">Kernel::Output::HTML::Notification::CustomerAnnouncementCheck</Item>
+                <Item Key="Segregation">###</Item>
+                <Item Key="UseMarquee">1</Item>
+                <Item Key="NotifyPriority">Error</Item>
+            </Hash>
         </Value>
     </Setting>
 </otobo_config>

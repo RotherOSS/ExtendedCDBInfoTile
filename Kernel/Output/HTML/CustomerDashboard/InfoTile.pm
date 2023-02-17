@@ -58,7 +58,6 @@ sub Run {
     );
 
     return $Content;
-
 }
 
 1;

@@ -14,26 +14,19 @@
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 # --
 
-package Kernel::Modules::CustomerDashboardContent;
+package Kernel::Output::HTML::Notification::CustomerAnnouncementCheck;
+
+use parent 'Kernel::Output::HTML::Base';
 
 use strict;
 use warnings;
 
-use Kernel::Language qw(Translatable);
-
 use Kernel::System::VariableCheck qw(IsHashRefWithData);
 
-our $ObjectManagerDisabled = 1;
-
-sub new {
-    my ( $Type, %Param ) = @_;
-
-    # allocate new hash for object
-    my $Self = {%Param};
-    bless( $Self, $Type );
-
-    return $Self;
-}
+our @ObjectDependencies = (
+    'Kernel::System::CustomerDashboard::InfoTile',
+    'Kernel::Output::HTML::Layout',
+);
 
 sub Run {
     my ( $Self, %Param ) = @_;
@@ -42,67 +35,69 @@ sub Run {
     my $CustomerDashboardInfoTileObject = $Kernel::OM->Get('Kernel::System::CustomerDashboard::InfoTile');
     my $HTMLUtilsObject                 = $Kernel::OM->Get('Kernel::System::HTMLUtils');
 
-    if ( $Self->{Subaction} eq 'InfoTile' ) {
+    my $Segregation = $Param{Config}->{Segregation} || '###'; 
+    my $MarqueeContent = '';
+    my $InfoTiles      = $CustomerDashboardInfoTileObject->InfoTileListGet(
+        UserID => $Self->{UserID},
+    );
 
-        my $InfoTileContent = '';
-        my $InfoTiles       = $CustomerDashboardInfoTileObject->InfoTileListGet(
-            UserID => $Self->{UserID},
-        );
+    # Check if hash ref is defined
+    if ( IsHashRefWithData($InfoTiles) ) {
+        # sort info tiles, sorting order: config order, start date, changed date, created date
+        my @Tiles       = values %{$InfoTiles};
+        my @TilesSorted = $Self->_OrderTiles( Tiles => \@Tiles );
 
-        if ( IsHashRefWithData($InfoTiles) ) {
+        my $CurrentDate = $Kernel::OM->Create('Kernel::System::DateTime');
 
-            # sort info tiles, sorting order: config order, start date, changed date, created date
-            my @Tiles       = values %{$InfoTiles};
-            my @TilesSorted = $Self->_OrderTiles( Tiles => \@Tiles );
-
-            my $CurrentDate = $Kernel::OM->Create('Kernel::System::DateTime');
-
-            for my $InfoTileRef (@TilesSorted) {
-                my %InfoTile = %{$InfoTileRef};
-                my $StartDate;
-                if ( $InfoTile{StartDateUsed} ) {
-                    $StartDate = $Kernel::OM->Create(
-                        'Kernel::System::DateTime',
-                        ObjectParams => {
-                            String => $InfoTile{StartDate}
-                        }
-                    );
-                }
-                my $StopDate;
-                if ( $InfoTile{StopDateUsed} ) {
-                    $StopDate = $Kernel::OM->Create(
-                        'Kernel::System::DateTime',
-                        ObjectParams => {
-                            String => $InfoTile{StopDate}
-                        }
-                    );
-                }
-
-                if (
-                    ( ( $StartDate && $CurrentDate->Compare( DateTimeObject => $StartDate ) > 0 ) || !$StartDate )
-                    && ( ( $StopDate && $StopDate->Compare( DateTimeObject => $CurrentDate ) > 0 ) || !$StopDate )
-                    && $InfoTile{ValidID} eq '1'
-                    )
-                {
-                    if ($InfoTileContent) {
-                        $InfoTileContent .= '<br><br>';
+        for my $InfoTileRef (@TilesSorted) {
+            my %InfoTile = %{$InfoTileRef};
+            my $StartDate;
+            if ( $InfoTile{StartDateUsed} ) {
+                $StartDate = $Kernel::OM->Create(
+                    'Kernel::System::DateTime',
+                    ObjectParams => {
+                        String => $InfoTile{StartDate}
                     }
+                );
+            }
+            my $StopDate;
+            if ( $InfoTile{StopDateUsed} ) {
+                $StopDate = $Kernel::OM->Create(
+                    'Kernel::System::DateTime',
+                    ObjectParams => {
+                        String => $InfoTile{StopDate}
+                    }
+                );
+            }
 
-                    $InfoTileContent .= $InfoTile{Content};
+            if (
+                ( ( $StartDate && $CurrentDate->Compare( DateTimeObject => $StartDate ) > 0 ) || !$StartDate )
+                && ( ( $StopDate && $StopDate->Compare( DateTimeObject => $CurrentDate ) > 0 ) || !$StopDate )
+                && $InfoTile{ValidID} eq '1'
+                )
+            {
+
+                if ($MarqueeContent) {
+                    $MarqueeContent .= ' ' . $Segregation . ' ' . $InfoTile{MarqueeContent};
+                } else {
+                    $MarqueeContent = $InfoTile{MarqueeContent};
                 }
             }
         }
+    }
 
+    if ($MarqueeContent) {
         my $Content = $HTMLUtilsObject->DocumentComplete(
-            String            => $InfoTileContent,
+            String            => $MarqueeContent,
             Charset           => 'utf-8',
             CustomerInterface => 1,
         );
 
-        return $LayoutObject->Attachment(
-            Type        => 'inline',
-            ContentType => 'text/html',
-            Content     => $Content,
+        return $LayoutObject->Notify(
+            Priority  => $Param{Config}->{NotifyPriority},
+            Data      => $Content,
+            Link      => $Param{Config}->{UseMarquee} ? '#' : '',  # Workaround to use classes.
+            LinkClass => 'oooMarquee'
         );
     }
 }

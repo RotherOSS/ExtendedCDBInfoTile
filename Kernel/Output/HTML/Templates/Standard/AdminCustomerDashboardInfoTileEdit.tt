@@ -81,11 +81,15 @@
                         </div>
                         <div class="Clear SpacingTop"></div>
 
-                        <label for="Content" class="Mandatory"><span class="Marker">*</span> [% Translate("Content") | html %]:</label>
+                        <label for="Content">[% Translate("Tile content") | html %]:</label>
                         <div id="RichTextField" class="RichTextField">
                             <textarea id="RichText" class="RichText" name="Content" title="[% Translate("Content Body") | html %]" rows="15">[% Data.Content | html %]</textarea>
-                            <div id="ContentError" class="TooltipErrorMessage"><p>[% Translate("This field is required.") | html %]</p></div>
-                            <div id="ContentServerError" class="TooltipErrorMessage"><p>[% Translate("This field is required.") | html %]</p></div>
+                        </div>
+                        <div class="Clear SpacingTop"></div>
+
+                        <label for="MarqueeContent">[% Translate("Marquee content") | html %]:</label>
+                        <div class="Field">
+                            <input type="text" name="MarqueeContent" id="MarqueeContent" value="[% Data.MarqueeContent | html %]" class="W75pc" maxlength="255"/>
                         </div>
                         <div class="Clear SpacingTop"></div>
 

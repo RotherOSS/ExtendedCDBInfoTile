@@ -34,6 +34,8 @@ sub Data {
     $Self->{Translation}->{'Edit customer dashboard info tile entry'}          = 'Info-Kachel-Eintrag bearbeiten';
     $Self->{Translation}->{'Start date shouldn\'t be defined afer Stop date!'} = 'Das Startdatum muss vor dem Enddatum liegen!';
     $Self->{Translation}->{'Name is missing!'}                                 = 'Name fehlt!';
+    $Self->{Translation}->{'Tile content'}                                     = 'Kachel-Inhalt';
+    $Self->{Translation}->{'Marquee content'}                                  = 'Lauftext-Inhalt';
     $Self->{Translation}->{'Content is missing!'}                              = 'Inhalt fehlt!';
     $Self->{Translation}->{'ValidID is missing!'}                              = 'ValidID fehlt!';
     $Self->{Translation}->{'Group is missing!'}                                = 'Gruppenauswahl fehlt!';
@@ -49,6 +51,8 @@ sub Data {
     $Self->{Translation}->{'No Customer Dashboard Info Tile ID'}                  = 'Es konnte kein Info-Kachel-Eintrag mit folgender ID gefunden werden: ';
     $Self->{Translation}->{'It was not possible to delete the info tile entry'}   = 'Der Info-Kachel-Eintrag konnte nicht geloescht werden';
     $Self->{Translation}->{'Manage Customer Dashboard Info Tile Entries'}         = 'Verwaltung der Info-Kachel-Eintraege fuer das Kunden-Dashboard';
+
+
 
     # or an other syntax would be
     #    $Self->{Translation} = {

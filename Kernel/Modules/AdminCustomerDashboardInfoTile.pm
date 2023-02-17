@@ -109,17 +109,17 @@ sub Run {
             };
         }
 
-        if ( !$CustomerDashboardInfoTileData->{Content} ) {
+        # if ( !$CustomerDashboardInfoTileData->{Content} ) {
 
-            # add server error class
-            $Error{ContentServerError} = 'ServerError';
+        #     # add server error class
+        #     $Error{ContentServerError} = 'ServerError';
 
-            # add notification
-            push @NotifyData, {
-                Priority => 'Error',
-                Info     => Translatable('Content is missing!'),
-            };
-        }
+        #     # add notification
+        #     push @NotifyData, {
+        #         Priority => 'Error',
+        #         Info     => Translatable('Content is missing!'),
+        #     };
+        # }
 
         if ( !$CustomerDashboardInfoTileData->{ValidID} ) {
 
@@ -158,15 +158,16 @@ sub Run {
         }
 
         my $ID = $CustomerDashboardInfoTileObject->InfoTileAdd(
-            StartDate     => $CustomerDashboardInfoTileData->{StartDate},
-            StartDateUsed => $CustomerDashboardInfoTileData->{StartDateUsed},
-            StopDate      => $CustomerDashboardInfoTileData->{StopDate},
-            StopDateUsed  => $CustomerDashboardInfoTileData->{StopDateUsed},
-            Name          => $CustomerDashboardInfoTileData->{Name},
-            Content       => $CustomerDashboardInfoTileData->{Content},
-            Groups        => $CustomerDashboardInfoTileData->{Groups},
-            ValidID       => $CustomerDashboardInfoTileData->{ValidID},
-            UserID        => $Self->{UserID},
+            StartDate       => $CustomerDashboardInfoTileData->{StartDate},
+            StartDateUsed   => $CustomerDashboardInfoTileData->{StartDateUsed},
+            StopDate        => $CustomerDashboardInfoTileData->{StopDate},
+            StopDateUsed    => $CustomerDashboardInfoTileData->{StopDateUsed},
+            Name            => $CustomerDashboardInfoTileData->{Name},
+            Content         => $CustomerDashboardInfoTileData->{Content},
+            MarqueeContent  => $CustomerDashboardInfoTileData->{MarqueeContent},
+            Groups          => $CustomerDashboardInfoTileData->{Groups},
+            ValidID         => $CustomerDashboardInfoTileData->{ValidID},
+            UserID          => $Self->{UserID},
         );
 
         # show error if can't create
@@ -255,7 +256,7 @@ sub Run {
             );
         }
 
-        if ( $ParamObject->GetParam( Param => 'Notification' ) eq 'Add' ) {
+        if ( ($ParamObject->GetParam( Param => 'Notification' ) || '') eq 'Add' ) {
 
             # add notification
             push @NotifyData, {
@@ -264,7 +265,7 @@ sub Run {
             };
         }
 
-        if ( $ParamObject->GetParam( Param => 'Notification' ) eq 'Update' ) {
+        if ( ($ParamObject->GetParam( Param => 'Notification' ) || '') eq 'Update' ) {
 
             # add notification
             push @NotifyData, {
@@ -343,13 +344,6 @@ sub Run {
             };
         }
 
-        if ( !$CustomerDashboardInfoTileData->{Content} ) {
-
-            # add server error class
-            $Error{ContentServerError} = 'ServerError';
-
-        }
-
         if ( !$CustomerDashboardInfoTileData->{Name} ) {
 
             # add server error class
@@ -384,16 +378,17 @@ sub Run {
 
         # otherwise update configuration and return to edit screen
         my $UpdateResult = $CustomerDashboardInfoTileObject->InfoTileUpdate(
-            StartDate     => $CustomerDashboardInfoTileData->{StartDate},
-            StopDate      => $CustomerDashboardInfoTileData->{StopDate},
-            StartDateUsed => $CustomerDashboardInfoTileData->{StartDateUsed},
-            StopDateUsed  => $CustomerDashboardInfoTileData->{StopDateUsed},
-            Name          => $CustomerDashboardInfoTileData->{Name},
-            Content       => $CustomerDashboardInfoTileData->{Content},
-            Groups        => $CustomerDashboardInfoTileData->{Groups},
-            ValidID       => $CustomerDashboardInfoTileData->{ValidID},
-            UserID        => $Self->{UserID},
-            ID            => $ID,
+            StartDate      => $CustomerDashboardInfoTileData->{StartDate},
+            StopDate       => $CustomerDashboardInfoTileData->{StopDate},
+            StartDateUsed  => $CustomerDashboardInfoTileData->{StartDateUsed},
+            StopDateUsed   => $CustomerDashboardInfoTileData->{StopDateUsed},
+            Name           => $CustomerDashboardInfoTileData->{Name},
+            Content        => $CustomerDashboardInfoTileData->{Content},
+            MarqueeContent => $CustomerDashboardInfoTileData->{MarqueeContent},
+            Groups         => $CustomerDashboardInfoTileData->{Groups},
+            ValidID        => $CustomerDashboardInfoTileData->{ValidID},
+            UserID         => $Self->{UserID},
+            ID             => $ID,
         );
 
         # show error if can't create
@@ -591,7 +586,7 @@ sub _ShowEdit {
         Prefix            => 'StartDate',
         Format            => 'DateInputFormatLong',
         YearPeriodPast    => 0,
-        YearPeriodFuture  => 1,
+        YearPeriodFuture  => 10,
         StartDateClass    => $Param{StartDateInvalid} || ' ',
         StartDateOptional => 1,
         StartDateUsed     => $CustomerDashboardInfoTileData->{StartDateUsed} || 0,
@@ -604,7 +599,7 @@ sub _ShowEdit {
         Prefix           => 'StopDate',
         Format           => 'DateInputFormatLong',
         YearPeriodPast   => 0,
-        YearPeriodFuture => 1,
+        YearPeriodFuture => 10,
         StopDateClass    => $Param{StopDateInvalid} || ' ',
         StopDateOptional => 1,
         StopDateUsed     => $CustomerDashboardInfoTileData->{StopDateUsed} || 0,
@@ -772,7 +767,7 @@ sub _GetParams {
     # get parameters from web browser
     for my $ParamName (
         qw(
-        ID Name Content ValidID )
+        ID Name Content MarqueeContent ValidID )
         )
     {
         $GetParam->{$ParamName} = $ParamObject->GetParam( Param => $ParamName );

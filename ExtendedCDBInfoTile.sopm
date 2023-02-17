@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <otobo_package version="1.0">
     <Name>ExtendedCDBInfoTile</Name>
-    <Version>10.0.0</Version>
-    <Framework>10.0.x</Framework>
+    <Version>10.1.1</Version>
+    <Framework>10.1.x</Framework>
     <Vendor>Rother OSS GmbH</Vendor>
     <URL>https://rother-oss.com/</URL>
     <License>GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007</License>
-    <Description Lang="en">Provides an info tile for the customer dashboard, which can be configured via a separate admin section.</Description>
+    <Description Lang="en">Provides an info tile and a marquee text for the customer dashboard, which can be configured via a separate admin section.</Description>
     <Filelist>
-        <File Permission="660" Location="Custom/Kernel/System/HTMLUtils.pm" />
         <File Permission="660" Location="Kernel/Config/Files/XML/ExtendedCDBInfoTile.xml" />
         <File Permission="660" Location="Kernel/Language/de_ExtendedCDBInfoTile.pm" />
         <File Permission="660" Location="Kernel/Modules/AdminCustomerDashboardInfoTile.pm" />
         <File Permission="660" Location="Kernel/Modules/CustomerDashboardContent.pm" />
         <File Permission="660" Location="Kernel/Output/HTML/CustomerDashboard/InfoTile.pm" />
+        <File Permission="660" Location="Kernel/Output/HTML/Notification/CustomerAnnouncementCheck.pm" />
         <File Permission="660" Location="Kernel/Output/HTML/Templates/Standard/AdminCustomerDashboardInfoTileEdit.tt" />
         <File Permission="660" Location="Kernel/Output/HTML/Templates/Standard/AdminCustomerDashboardInfoTileNew.tt" />
         <File Permission="660" Location="Kernel/Output/HTML/Templates/Standard/AdminCustomerDashboardInfoTile.tt" />
