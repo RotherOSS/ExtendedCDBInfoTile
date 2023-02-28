@@ -6,7 +6,7 @@
     <Vendor>Rother OSS GmbH</Vendor>
     <URL>https://rother-oss.com/</URL>
     <License>GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007</License>
-    <Description Lang="en">Provides an info tile and a marquee text for the customer dashboard, which can be configured via a separate admin section.</Description>
+    <Description Lang="en">Provides an new info tile and a marquee text for the customer dashboard, which can be configured via a separate admin section.</Description>
     <Filelist>
         <File Permission="660" Location="Kernel/Config/Files/XML/ExtendedCDBInfoTile.xml" />
         <File Permission="660" Location="Kernel/Language/de_ExtendedCDBInfoTile.pm" />
