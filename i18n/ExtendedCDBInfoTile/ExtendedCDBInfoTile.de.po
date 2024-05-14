@@ -478,3 +478,27 @@ msgstr "Benutzer, die rw-Berechtigungen in einer dieser Gruppen haben, dürfen F
 msgid "Users who have rw permissions in one of these groups are permitted to manage projects. Additionally the members have administration permissions to the git management."
 msgstr "Benutzer die über rw-Berechtigungen in einer dieser Gruppen verfügen, können Projekte verwalten. Zusätzlich haben die Mitglieder Administrationsberechtigungen für die Git-Verwaltung."
 
+#. SysConfig
+msgid "CustomerDashboard Info Tile"
+msgstr ""
+
+#. SysConfig
+msgid "Defines the module to display a notification in the customer interface. UseMarquee options: 1/0. NotifyPriority options: Notice/Error/Success/Info."
+msgstr ""
+
+#. SysConfig
+msgid "Frontend module for dashboard info tile in customer interface."
+msgstr ""
+
+#. SysConfig
+msgid "Loader module for dashboard info tile in customer interface."
+msgstr ""
+
+#. SysConfig
+msgid "Manage Customer Dashboard Info Tile Entries"
+msgstr ""
+
+#. SysConfig
+msgid "Tile registration for the CustomerDashboard. Module is required. Optionally, an order for items can be set. The order must have the name of the item as key and the desired position as integer value."
+msgstr ""
+
