@@ -1,0 +1,199 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2019-2024 Rother OSS GmbH, https://otobo.de/
+# This file is distributed under the same license as the OTOBO Installation Guide package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: OTOBO Installation Guide rel-11.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-05-16 09:26+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../content/index.rst:20
+msgid "Sacrifice to Sphinx"
+msgstr ""
+
+#: ../../content/index.rst:23
+msgid "Description"
+msgstr ""
+
+#: ../../content/index.rst:24
+msgid "Provides an new info tile and a marquee text for the customer dashboard, which can be configured via a separate admin section."
+msgstr ""
+
+#: ../../content/index.rst:27
+msgid "System requirements"
+msgstr ""
+
+#: ../../content/index.rst:30
+msgid "Framework"
+msgstr ""
+
+#: ../../content/index.rst:31
+msgid "OTOBO 10.1.x"
+msgstr ""
+
+#: ../../content/index.rst:34
+msgid "Packages"
+msgstr ""
+
+#: ../../content/index.rst:35
+#: ../../content/index.rst:39
+msgid "\\-"
+msgstr ""
+
+#: ../../content/index.rst:38
+msgid "Third-party software"
+msgstr ""
+
+#: ../../content/index.rst:42
+msgid "Usage"
+msgstr ""
+
+#: ../../content/index.rst:45
+msgid "Setup"
+msgstr ""
+
+#: ../../content/index.rst:48
+msgid "Configuration Reference"
+msgstr ""
+
+#: ../../content/index.rst:51
+msgid "Frontend::Admin::CustomerDashboardInfoTile"
+msgstr ""
+
+#: ../../content/index.rst:54
+msgid "Frontend::Module###AdminCustomerDashboardInfoTile"
+msgstr ""
+
+#: ../../content/index.rst:55
+msgid "Frontend module for dashboard info tile in customer interface."
+msgstr ""
+
+#: ../../content/index.rst:58
+msgid "Frontend::Admin::CustomerDashboardInfoTile::Loader"
+msgstr ""
+
+#: ../../content/index.rst:61
+msgid "Loader::Module::AdminCustomerDashboardInfoTile###002-ExtendedCDBInfoTile"
+msgstr ""
+
+#: ../../content/index.rst:62
+msgid "Loader module for dashboard info tile in customer interface."
+msgstr ""
+
+#: ../../content/index.rst:65
+msgid "Frontend::Admin::ModuleRegistration::AdminOverview"
+msgstr ""
+
+#: ../../content/index.rst:68
+msgid "Frontend::NavigationModule###AdminCustomerDashboardInfoTile"
+msgstr ""
+
+#: ../../content/index.rst:69
+msgid "Admin area navigation for the agent interface."
+msgstr ""
+
+#: ../../content/index.rst:72
+msgid "Frontend::Admin::ModuleRegistration::MainMenu"
+msgstr ""
+
+#: ../../content/index.rst:75
+msgid "Frontend::Navigation###AdminCustomerDashboardInfoTile###002-ExtendedCDBInfoTile"
+msgstr ""
+
+#: ../../content/index.rst:76
+msgid "Main menu item registration."
+msgstr ""
+
+#: ../../content/index.rst:79
+msgid "Frontend::Base::Loader"
+msgstr ""
+
+#: ../../content/index.rst:82
+msgid "Loader::Customer::CommonJS###009-ExtendedCDBInfo"
+msgstr ""
+
+#: ../../content/index.rst:83
+msgid "List of JS files to always be loaded for the customer interface."
+msgstr ""
+
+#: ../../content/index.rst:86
+msgid "Loader::Customer::CommonCSS###009-ExtendedCDBInfo"
+msgstr ""
+
+#: ../../content/index.rst:87
+msgid "List of CSS files to always be loaded for the customer interface."
+msgstr ""
+
+#: ../../content/index.rst:90
+msgid "Frontend::Customer::FrontendNotification"
+msgstr ""
+
+#: ../../content/index.rst:93
+msgid "CustomerFrontend::NotifyModule###8-CustomerAnnouncement-Check"
+msgstr ""
+
+#: ../../content/index.rst:94
+msgid "Defines the module to display a notification in the customer interface. UseMarquee options: 1/0. NotifyPriority options: Notice/Error/Success/Info."
+msgstr ""
+
+#: ../../content/index.rst:97
+msgid "Frontend::Customer::ModuleRegistration"
+msgstr ""
+
+#: ../../content/index.rst:100
+msgid "CustomerFrontend::Module###CustomerDashboardContent"
+msgstr ""
+
+#: ../../content/index.rst:101
+msgid "Frontend module registration for the customer interface."
+msgstr ""
+
+#: ../../content/index.rst:104
+msgid "Frontend::Customer::View::Dashboard::Tiles"
+msgstr ""
+
+#: ../../content/index.rst:107
+msgid "CustomerDashboard::Tiles###InfoTile-01"
+msgstr ""
+
+#: ../../content/index.rst:108
+msgid "Tile registration for the CustomerDashboard. Module is required. Optionally, an order for items can be set. The order must have the name of the item as key and the desired position as integer value."
+msgstr ""
+
+#: ../../content/index.rst:111
+msgid "About"
+msgstr ""
+
+#: ../../content/index.rst:114
+msgid "Contact"
+msgstr ""
+
+#: ../../content/index.rst:115
+msgid "Rother OSS GmbH"
+msgstr ""
+
+#: ../../content/index.rst:116
+msgid "Email: hello@otobo.de"
+msgstr ""
+
+#: ../../content/index.rst:117
+msgid "Web: https://otobo.de"
+msgstr ""
+
+#: ../../content/index.rst:120
+msgid "Version"
+msgstr ""
+
+#: ../../content/index.rst:121
+msgid "Author: |doc-vendor| / Version: |doc-version| / Date of release: |doc-datestamp|"
+msgstr ""
+
