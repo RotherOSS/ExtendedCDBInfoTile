@@ -4,18 +4,21 @@
 # Guide package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: OTOBO Installation Guide rel-11.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-05-16 09:26+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2024-07-02 09:35+0000\n"
+"Last-Translator: Markus Hlinka <mah@rother-oss.com>\n"
+"Language-Team: German <http://weblate.otobo.org/projects/"
+"manual-extendedcdbinfotile/master/de/>\n"
+"Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.4.2\n"
 "Generated-By: Babel 2.4.0\n"
 
 #: ../../content/index.rst:16
@@ -24,7 +27,7 @@ msgstr ""
 
 #: ../../content/index.rst:19
 msgid "Description"
-msgstr ""
+msgstr "Beschreibung"
 
 #: ../../content/index.rst:20
 msgid ""
@@ -34,7 +37,7 @@ msgstr ""
 
 #: ../../content/index.rst:23
 msgid "System requirements"
-msgstr ""
+msgstr "Systemvoraussetzungen"
 
 #: ../../content/index.rst:26
 msgid "Framework"
@@ -42,11 +45,11 @@ msgstr ""
 
 #: ../../content/index.rst:27
 msgid "OTOBO 10.1.x"
-msgstr ""
+msgstr "OTOBO 10.1.x"
 
 #: ../../content/index.rst:30
 msgid "Packages"
-msgstr ""
+msgstr "Pakete"
 
 #: ../../content/index.rst:31 ../../content/index.rst:35
 msgid "\\-"
@@ -54,19 +57,19 @@ msgstr ""
 
 #: ../../content/index.rst:34
 msgid "Third-party software"
-msgstr ""
+msgstr "Drittanbieter-Software"
 
 #: ../../content/index.rst:38
 msgid "Usage"
-msgstr ""
+msgstr "Verwendung"
 
 #: ../../content/index.rst:41
 msgid "Setup"
-msgstr ""
+msgstr "Einrichtung"
 
 #: ../../content/index.rst:44
 msgid "Configuration Reference"
-msgstr ""
+msgstr "Konfigurationsreferenz"
 
 #: ../../content/index.rst:47
 msgid "Frontend::Admin::CustomerDashboardInfoTile"
@@ -207,4 +210,3 @@ msgid ""
 "Author: |doc-vendor| / Version: |doc-version| / Date of release: |doc-"
 "datestamp|"
 msgstr ""
-
