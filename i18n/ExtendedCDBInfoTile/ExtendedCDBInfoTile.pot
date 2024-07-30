@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: ExtendedCDBInfoTile\n"
-"POT-Creation-Date: 2024-05-25 04:23+0000\n"
+"POT-Creation-Date: 2024-07-30 01:59+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,5 +16,9 @@ msgstr ""
 
 #. Template: AdminCustomerDashboardInfoTile
 msgid "Customer Dashboard Info Tile Management"
+msgstr ""
+
+#. SysConfig
+msgid "Defines the initial height for the rich text editor component in pixels."
 msgstr ""
 

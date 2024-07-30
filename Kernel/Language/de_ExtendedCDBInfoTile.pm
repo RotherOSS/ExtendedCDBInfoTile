@@ -27,6 +27,10 @@ sub Data {
     $Self->{Translation}->{'Customer Dashboard Info Tile'} = '';
     $Self->{Translation}->{'Customer Dashboard Info Tile Management'} = '';
 
+    # SysConfig
+    $Self->{Translation}->{'Defines the initial height for the rich text editor component in pixels.'} =
+        '';
+
 
     push @{ $Self->{JavaScriptStrings} // [] }, (
     'Do you really want to delete this customer dashboard info tile entry?',
