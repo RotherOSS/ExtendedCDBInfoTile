@@ -28,7 +28,11 @@ sub Data {
     $Self->{Translation}->{'Customer Dashboard Info Tile Management'} = '';
 
     # SysConfig
+    $Self->{Translation}->{'Defines if parent-child translations for queues and services should be generated automatically.'} =
+        '';
     $Self->{Translation}->{'Defines the initial height for the rich text editor component in pixels.'} =
+        '';
+    $Self->{Translation}->{'Defines the initial height in pixels for the rich text editor component for this screen.'} =
         '';
 
 
